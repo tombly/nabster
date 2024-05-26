@@ -156,8 +156,17 @@ public static class Report
         }
 
         // If we have a multiplier then it's recurring.
-        return multiplier != null ? category.Goal_target / 1000m * multiplier : (category.Goal_overall_left / 1000m) / (category.Goal_months_to_budget - 1);
-    }
+        if (multiplier != null)
+        {
+            return category.Goal_target / 1000 * multiplier ?? 0;
+        }
+        else
+        {
+            if (category.Goal_overall_left > 0)
+                return category.Goal_overall_left / 1000 / category.Goal_months_to_budget ?? 0;
+            else
+                return 0;
+        }    }
 
     private static string SuffixForDay(int day)
     {

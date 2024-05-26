@@ -1,10 +1,16 @@
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 
-namespace Nabster.Spend;
+namespace Nabster;
 
 public static class Extensions
 {
+    public static ICellStyle AddDateStyle(this ICellStyle style, IWorkbook workbook)
+    {
+        style.DataFormat = workbook.CreateDataFormat().GetFormat("m/d/yyyy");
+        return style;
+    }
+
     public static ICellStyle AddCurrencyStyle(this ICellStyle style, IWorkbook workbook)
     {
         style.DataFormat = workbook.CreateDataFormat().GetFormat(string.Format("\"{0}\"#,##0.00", "$"));
