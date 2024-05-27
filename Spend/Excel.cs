@@ -7,73 +7,123 @@ public static class Excel
 {
     public static void Create(SpendReport report)
     {
-        var fileName = $"{report.BudgetName} {DateTime.Now:yyyyMMdd}.xlsx";
+        var fileName = $"{report.BudgetName} Spend {DateTime.Now:yyyyMMdd}.xlsx";
         var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
         var workbook = new XSSFWorkbook();
 
-        CreateSheet(workbook, report.Categories);
+        CreateSheet(workbook, report);
 
         using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         workbook.Write(stream);
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, List<SpendCategory> categories)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, SpendReport spendReport)
     {
-        var sheet = workbook.CreateSheet("Budget");
-
+        var sheet = workbook.CreateSheet("Spend");
         var rowCount = 0;
-        var headerRow = sheet.CreateRow(rowCount++);
-        headerRow.CreateCell(0).SetCellValue("CategoryGroup");
-        headerRow.CreateCell(1).SetCellValue("Category");
-        headerRow.CreateCell(2).SetCellValue("GoalCadence");
-        headerRow.CreateCell(3).SetCellValue("GoalDay");
-        headerRow.CreateCell(4).SetCellValue("GoalTarget");
-        headerRow.CreateCell(5).SetCellValue("MonthlyCost");
-        headerRow.CreateCell(6).SetCellValue("GoalPctComplete");
 
-        headerRow.ApplyStyle(workbook.CreateCellStyle().AddFontStyle(workbook, true));
-
-        foreach (var category in categories)
-            CreateRow(sheet, rowCount++, category);
+        CreateHeaderRow(sheet, rowCount++);
+        foreach (var group in spendReport.Groups)
+        {
+            CreateGroupTitleRow(sheet, rowCount++, group.CategoryGroupName);
+            foreach (var category in group.Categories)
+                CreateCategoryRow(sheet, rowCount++, category);
+            CreateGroupTotalRow(sheet, rowCount++, group.MonthlyTotal, group.YearlyTotal);
+        }
+        sheet.CreateRow(rowCount++);
+        CreateReportTotalRow(sheet, rowCount++, spendReport.MonthlyTotal, spendReport.YearlyTotal);
 
         var columnCount = 0;
+        sheet.SetColumnWidth(columnCount++, 11000);
         var columnEnumerator = sheet.GetEnumerator();
         while (columnEnumerator.MoveNext())
-            sheet.SetColumnWidth(columnCount++, 5000);
+                sheet.SetColumnWidth(columnCount++, 4500);
 
         return sheet;
     }
 
-    private static IRow CreateRow(ISheet sheet, int rowCount, SpendCategory category)
+    private static void CreateHeaderRow(ISheet sheet, int rowCount)
     {
         var row = sheet.CreateRow(rowCount);
-        row.CreateCell(0).SetCellValue(category.CategoryGroupName);
-        row.CreateCell(1).SetCellValue(category.CategoryName);
-        row.CreateCell(2).SetCellValue(category.GoalCadence);
-        row.CreateCell(3).SetCellValue(category.GoalDay);
-        row.CreateCell(4);
-        row.CreateCell(5);
-        row.CreateCell(6);
+        row.CreateCell(0).SetCellValue("Category");
+        row.CreateCell(1).SetCellValue("GoalCadence");
+        row.CreateCell(2).SetCellValue("GoalDay");
+        row.CreateCell(3).SetCellValue("GoalTarget");
+        row.CreateCell(4).SetCellValue("MonthlyCost");
+        row.CreateCell(5).SetCellValue("GoalPctComplete");
+
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true));
+        row.Cells[5].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, isBold: true, isGray: true);
+    }
+
+    private static IRow CreateCategoryRow(ISheet sheet, int rowCount, SpendCategory category)
+    {
+        var row = sheet.CreateRow(rowCount);
+        row.CreateCell(0).SetCellValue(category.CategoryName);
+        row.CreateCell(1).SetCellValue(category.GoalCadence);
+        row.CreateCell(2).SetCellValue(category.GoalDay);
+        row.CreateCell(3).SetCellType(CellType.Numeric);
+        row.CreateCell(4).SetCellType(CellType.Numeric);
+
+        row.Cells[3].SetCellValue((double)category.GoalTarget);
+        row.Cells[4].SetCellValue((double)category.MonthlyCost);
+
+        if (category.GoalPercentageComplete != null)
+        {
+            row.CreateCell(5).SetCellType(CellType.Numeric);
+            row.Cells[5].SetCellValue((double)category.GoalPercentageComplete.Value);
+            row.Cells[5].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, isGray: true).AddPercentageStyle(sheet.Workbook);
+        }
 
         row.Cells[0].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook);
         row.Cells[1].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook);
         row.Cells[2].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook);
-        row.Cells[3].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook);
+        row.Cells[3].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook).AddCurrencyStyle(sheet.Workbook);
         row.Cells[4].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook).AddCurrencyStyle(sheet.Workbook);
-        row.Cells[5].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook).AddCurrencyStyle(sheet.Workbook);
-        row.Cells[6].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook).AddPercentageStyle(sheet.Workbook);
 
-        row.Cells[4].SetCellType(CellType.Numeric);
-        if (!string.IsNullOrWhiteSpace(category.GoalTarget))
-            row.Cells[4].SetCellValue(double.Parse(category.GoalTarget));
+        return row;
+    }
 
-        row.Cells[5].SetCellType(CellType.Numeric);
-        if (category.MonthlyCost != null)
-            row.Cells[5].SetCellValue((double)category.MonthlyCost);
+    private static IRow CreateGroupTitleRow(ISheet sheet, int rowCount, string groupName)
+    {
+        var row = sheet.CreateRow(rowCount);
+        row.CreateCell(0).SetCellValue(groupName);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true));
+        return row;
+    }
 
-        row.Cells[6].SetCellType(CellType.Numeric);
-        if (!string.IsNullOrWhiteSpace(category.GoalPercentageComplete))
-            row.Cells[6].SetCellValue(double.Parse(category.GoalPercentageComplete));
+    private static IRow CreateGroupTotalRow(ISheet sheet, int rowCount, decimal monthlyTotal, decimal yearlyTotal)
+    {
+        var row = sheet.CreateRow(rowCount);
+        row.CreateCell(0);
+        row.CreateCell(1);
+        row.CreateCell(2).SetCellValue("Group Total");
+
+        row.CreateCell(3).SetCellType(CellType.Numeric);
+        row.Cells[3].SetCellValue((double)yearlyTotal);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true).AddCurrencyStyle(sheet.Workbook));
+
+        row.CreateCell(4).SetCellType(CellType.Numeric);
+        row.Cells[4].SetCellValue((double)monthlyTotal);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true).AddCurrencyStyle(sheet.Workbook));
+
+        return row;
+    }
+
+    private static IRow CreateReportTotalRow(ISheet sheet, int rowCount, decimal monthlyTotal, decimal yearlyTotal)
+    {
+        var row = sheet.CreateRow(rowCount);
+        row.CreateCell(0);
+        row.CreateCell(1);
+        row.CreateCell(2).SetCellValue("Total");
+
+        row.CreateCell(3).SetCellType(CellType.Numeric);
+        row.Cells[3].SetCellValue((double)yearlyTotal);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true).AddCurrencyStyle(sheet.Workbook));
+
+        row.CreateCell(4).SetCellType(CellType.Numeric);
+        row.Cells[4].SetCellValue((double)monthlyTotal);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true).AddCurrencyStyle(sheet.Workbook));
 
         return row;
     }

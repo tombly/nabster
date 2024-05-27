@@ -23,12 +23,14 @@ public static class Extensions
         return style;
     }
 
-    public static ICellStyle AddFontStyle(this ICellStyle style, IWorkbook workbook, bool isBold = false)
+    public static ICellStyle AddFontStyle(this ICellStyle style, IWorkbook workbook, bool isBold = false, bool isGray = false)
     {
         var font = workbook.CreateFont();
         font.FontHeightInPoints = 14;
         font.FontName = "Aptos";
         font.IsBold = isBold;
+        if (isGray)
+            font.Color = NPOI.HSSF.Util.HSSFColor.Grey50Percent.Index;
         style.SetFont(font);
         return style;
     }

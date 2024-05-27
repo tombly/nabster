@@ -25,24 +25,46 @@ public static class Report
             category.Category_group_name = budget.Category_groups!.FirstOrDefault(g => g.Id == category.Category_group_id)?.Name;
 
         // Build our model.
-        var model = new SpendReport { BudgetName = budgetName };
-        foreach (var category in budget.Categories!
-            .Where(c => !c.Deleted)
-            .Where(c => !c.Hidden)
-            .Where(c => c.Category_group_id != Guid.Parse("1a129df6-4857-4ed9-8961-5b803b27707e")) // Skip credit card categories.
-            .Where(c => c.Category_group_id != Guid.Parse("5fb28acc-c607-42dc-ab04-7963a6fe718d")) // Skip internal categories.
-            .OrderBy(c => c.Category_group_name))
+        var model = new SpendReport
         {
-            model.Categories.Add(new SpendCategory
-            {
-                CategoryName = category.Name,
-                CategoryGroupName = category.Category_group_name!,
-                GoalCadence = BuildGoalCadence(category.Goal_cadence, category.Goal_cadence_frequency),
-                GoalDay = BuildDueDate(category.Goal_cadence, category.Goal_day, category.Goal_target_month),
-                GoalTarget = category.Goal_target > 0 ? (category.Goal_target.Value / 1000.0).ToString() : string.Empty,
-                GoalPercentageComplete = (category.Goal_percentage_complete / 100.0).ToString()!,
-                MonthlyCost = BuildMonthlyCost(category)
-            });
+            BudgetName = budgetName,
+            Groups = [.. budget.Categories
+                .Where(c => c.Category_group_id != Guid.Parse("1a129df6-4857-4ed9-8961-5b803b27707e")) // Skip credit card categories.
+                .Where(c => c.Category_group_id != Guid.Parse("5fb28acc-c607-42dc-ab04-7963a6fe718d")) // Skip internal categories.
+                .Select(c => c.Category_group_name)
+                .Distinct()
+                .Select(groupName =>
+                    new SpendGroup
+                    {
+                        CategoryGroupName = groupName!,
+                        Categories = [.. budget.Categories
+                            .Where(c => c.Category_group_name == groupName)
+                            .Where(c => !c.Deleted)
+                            .Where(c => !c.Hidden)
+                            .Select(c => new SpendCategory
+                            {
+                                CategoryName = c.Name,
+                                GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency),
+                                GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
+                                GoalTarget = c.Goal_target > 0 ? (c.Goal_target.Value / 1000m) : 0,
+                                GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
+                                MonthlyCost = BuildMonthlyCost(c)
+                            })
+                            .OrderBy(c => c.CategoryName)]
+                    })
+                .OrderBy(group => group.CategoryGroupName)]
+        };
+
+        foreach (var group in model.Groups)
+        {
+            group.MonthlyTotal = group.Categories.Sum(c => c.MonthlyCost);
+            group.YearlyTotal = group.Categories.Sum(c => c.GoalTarget);
+        }
+
+        foreach (var group in model.Groups)
+        {
+            model.MonthlyTotal += group.MonthlyTotal;
+            model.YearlyTotal += group.YearlyTotal;
         }
 
         // Save to an Excel file.
@@ -52,7 +74,7 @@ public static class Report
     private static string BuildGoalCadence(int? goalCadence, int? goalCadenceFrequency)
     {
         if (goalCadence == null)
-            return "No Repeat";
+            return "None";
 
         var cadence = string.Empty;
         if (new List<int?> { 0, 1, 2, 13 }.Contains(goalCadence))
@@ -61,22 +83,31 @@ public static class Report
             // where 0 = None, 1 = Monthly, 2 = Weekly, and 13 = Yearly. For example,
             // goal_cadence 1 with goal_cadence_frequency 2 means the goal is due every
             // other month.
-            var repeatFrequency = string.Empty;
-            if (goalCadenceFrequency > 1)
-                repeatFrequency = $" (Every {goalCadenceFrequency})";
             switch (goalCadence)
             {
                 case 0:
-                    cadence = "None";
+                    cadence = "Once";
                     break;
                 case 1:
-                    cadence = $"Monthly{repeatFrequency}";
+                    if (goalCadenceFrequency == 1)
+                        cadence = "Monthly";
+                    else
+                    if (goalCadenceFrequency == 3)
+                        cadence = $"Quarterly";
+                    else
+                        cadence = $"{goalCadenceFrequency} Months";
                     break;
                 case 2:
-                    cadence = $"Weekly{repeatFrequency}";
+                    if (goalCadenceFrequency == 1)
+                        cadence = "Weekly";
+                    else
+                        cadence = $"{goalCadenceFrequency} Weeks";
                     break;
                 case 13:
-                    cadence = $"Yearly{repeatFrequency}";
+                    if (goalCadenceFrequency == 1)
+                        cadence = "Yearly";
+                    else
+                        cadence = $"{goalCadenceFrequency} Years";
                     break;
             }
         }
@@ -86,9 +117,9 @@ public static class Report
             // repeats every goal_cadence, where 3 = Every 2 Months, 4 = Every 3 Months,
             // ..., 12 = Every 11 Months, and 14 = Every 2 Years.
             if (goalCadence == 14)
-                cadence = "Every 2 years";
+                cadence = "2 Years";
             else
-                cadence = $"Every {goalCadence - 1} months";
+                cadence = $"{goalCadence - 1} Months";
         }
 
         return cadence;
@@ -122,7 +153,7 @@ public static class Report
     /// non-recurring goals it simply divides the remaining amount by the
     /// remaining months.
     /// </summary>
-    private static decimal? BuildMonthlyCost(Category category)
+    private static decimal BuildMonthlyCost(Category category)
     {
         var multiplier = default(decimal?);
         switch (category.Goal_cadence)
@@ -130,10 +161,10 @@ public static class Report
             case 0: // No repeat
                 break;
             case 1: // Monthly
-                multiplier = 1.0m / category.Goal_cadence_frequency;
+                multiplier = 1m / category.Goal_cadence_frequency;
                 break;
             case 2: // Weekly
-                multiplier = 4 * category.Goal_cadence_frequency;
+                multiplier = 4m * category.Goal_cadence_frequency;
                 break;
             case 3: // Every 2 months
             case 4: // Every 3 months
@@ -145,7 +176,7 @@ public static class Report
             case 10: // Every 9 months
             case 11: // Every 10 months
             case 12: // Every 11 months
-                multiplier = 1m / (category.Goal_cadence - 1);
+                multiplier = 1m / (category.Goal_cadence - 1m);
                 break;
             case 13: // Yearly
                 multiplier = 1m / (12m * category.Goal_cadence_frequency);
@@ -158,15 +189,16 @@ public static class Report
         // If we have a multiplier then it's recurring.
         if (multiplier != null)
         {
-            return category.Goal_target / 1000 * multiplier ?? 0;
+            return category.Goal_target / 1000m * multiplier ?? 0;
         }
         else
         {
             if (category.Goal_overall_left > 0)
-                return category.Goal_overall_left / 1000 / category.Goal_months_to_budget ?? 0;
+                return category.Goal_overall_left / 1000m / category.Goal_months_to_budget ?? 0;
             else
                 return 0;
-        }    }
+        }
+    }
 
     private static string SuffixForDay(int day)
     {
