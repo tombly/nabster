@@ -1,13 +1,13 @@
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Nabster.Historical;
+namespace Nabster.Performance;
 
 public static class Excel
 {
-    public static void Create(HistoricalReport report)
+    public static void Create(PerformanceReport report)
     {
-        var fileName = $"{report.BudgetName} Historical {DateTime.Now:yyyyMMdd}.xlsx";
+        var fileName = $"{report.BudgetName} Performance {DateTime.Now:yyyyMMdd}.xlsx";
         var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
         var workbook = new XSSFWorkbook();
 
@@ -17,9 +17,9 @@ public static class Excel
         workbook.Write(stream);
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, List<HistoricalAccountGroup> accountGroups)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, List<PerformanceAccountGroup> accountGroups)
     {
-        var sheet = workbook.CreateSheet("Historical");
+        var sheet = workbook.CreateSheet("Performance");
 
         var rowCount = 0;
         var headerRow = sheet.CreateRow(rowCount++);

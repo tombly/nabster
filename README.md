@@ -2,7 +2,7 @@
 A console app for analyzing and reporting on your financial data in [YNAB](https://www.youneedabudget.com) written in C#.
 
 ## What it does
-This app generates a monthly spend report that lists each budget category along with any goal information and its monthly cost. The purpose is to figure out for each category what the typical monthly cost is over the long term, not at a specific point in time (which is what YNAB's website is really good at). This can then be used for cash flow planning.
+This app generates a monthly planning report that lists each budget category along with any goal information and its monthly cost. The purpose is to figure out for each category what the typical monthly cost is over the long term, not at a specific point in time (which is what YNAB's website is really good at). This can then be used for cash flow planning.
 
 If a category has repeating target then the monthly cost is calculated directly from that. For example, if the target is $120 annually then the monthly cost is calculated as $10 (even if this year you've already funded the full amount).
 

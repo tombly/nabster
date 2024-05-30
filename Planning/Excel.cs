@@ -1,13 +1,13 @@
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Nabster.Spend;
+namespace Nabster.Planning;
 
 public static class Excel
 {
-    public static void Create(SpendReport report)
+    public static void Create(PlanningReport report)
     {
-        var fileName = $"{report.BudgetName} Spend {DateTime.Now:yyyyMMdd}.xlsx";
+        var fileName = $"{report.BudgetName} Planning {DateTime.Now:yyyyMMdd}.xlsx";
         var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
         var workbook = new XSSFWorkbook();
 
@@ -17,13 +17,13 @@ public static class Excel
         workbook.Write(stream);
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, SpendReport spendReport)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, PlanningReport report)
     {
-        var sheet = workbook.CreateSheet("Spend");
+        var sheet = workbook.CreateSheet("Planning");
         var rowCount = 0;
 
         CreateHeaderRow(sheet, rowCount++);
-        foreach (var group in spendReport.Groups)
+        foreach (var group in report.Groups)
         {
             CreateGroupTitleRow(sheet, rowCount++, group.CategoryGroupName);
             foreach (var category in group.Categories)
@@ -31,7 +31,7 @@ public static class Excel
             CreateGroupTotalRow(sheet, rowCount++, group.MonthlyTotal, group.YearlyTotal);
         }
         sheet.CreateRow(rowCount++);
-        CreateReportTotalRow(sheet, rowCount++, spendReport.MonthlyTotal, spendReport.YearlyTotal);
+        CreateReportTotalRow(sheet, rowCount++, report.MonthlyTotal, report.YearlyTotal);
 
         var columnCount = 0;
         sheet.SetColumnWidth(columnCount++, 11000);
@@ -56,7 +56,7 @@ public static class Excel
         row.Cells[5].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, isBold: true, isGray: true);
     }
 
-    private static IRow CreateCategoryRow(ISheet sheet, int rowCount, SpendCategory category)
+    private static IRow CreateCategoryRow(ISheet sheet, int rowCount, PlanningCategory category)
     {
         var row = sheet.CreateRow(rowCount);
         row.CreateCell(0).SetCellValue(category.CategoryName);

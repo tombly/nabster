@@ -18,11 +18,11 @@ public static class Program
 
         switch(reportName)
         {
-            case "spend":
-                await Spend.Report.Generate(budgetName, client);
+            case "planning":
+                await Planning.Report.Generate(budgetName, client);
                 return;
-            case "historical":
-                await Historical.Report.Generate(budgetName, client, inputFilePath);
+            case "performance":
+                await Performance.Report.Generate(budgetName, client, inputFilePath);
                 return;
         }
     }

@@ -1,6 +1,6 @@
 using Ynab.Api;
 
-namespace Nabster.Historical;
+namespace Nabster.Performance;
 
 /// <summary>
 /// Generates a report of cumulative, grouped, account balances. The report
@@ -15,12 +15,12 @@ public static class Report
         var accountGroupMap = ReadAccountGroupFile(inputFilePath);
 
         // Seed the report with the account groups.
-        var model = new HistoricalReport
+        var model = new PerformanceReport
         {
             BudgetName = budgetName,
             AccountGroups = accountGroupMap.Values.Distinct().Select(groupName =>
             {
-                return new HistoricalAccountGroup
+                return new PerformanceAccountGroup
                 {
                     Name = groupName, // e.g. Investments
                     AccountNames = accountGroupMap.Where(g => g.Value == groupName).Select(g => g.Key).ToList()
@@ -49,7 +49,7 @@ public static class Report
                 if (accountGroupMap.TryGetValue(accountName, out string? groupName))
                 {
                     model.AccountGroups.First(g => g.Name == groupName).Transactions.Add(
-                        new HistoricalTransaction
+                        new PerformanceTransaction
                         {
                             Date = transaction.Date,
                             Amount = transaction.Amount / 1000m

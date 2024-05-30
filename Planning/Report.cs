@@ -1,9 +1,9 @@
 using Ynab.Api;
 
-namespace Nabster.Spend;
+namespace Nabster.Planning;
 
 /// <summary>
-/// Generates a monthly spend report. Monthly and non-monthly (quarterly,
+/// Generates a monthly planning report. Monthly and non-monthly (quarterly,
 /// annually, etc.) recurring goals are supported, as well as non-recurring
 /// goals.
 /// </summary>
@@ -25,7 +25,7 @@ public static class Report
             category.Category_group_name = budget.Category_groups!.FirstOrDefault(g => g.Id == category.Category_group_id)?.Name;
 
         // Build our model.
-        var model = new SpendReport
+        var model = new PlanningReport
         {
             BudgetName = budgetName,
             Groups = [.. budget.Categories
@@ -34,14 +34,14 @@ public static class Report
                 .Select(c => c.Category_group_name)
                 .Distinct()
                 .Select(groupName =>
-                    new SpendGroup
+                    new PlanningGroup
                     {
                         CategoryGroupName = groupName!,
                         Categories = [.. budget.Categories
                             .Where(c => c.Category_group_name == groupName)
                             .Where(c => !c.Deleted)
                             .Where(c => !c.Hidden)
-                            .Select(c => new SpendCategory
+                            .Select(c => new PlanningCategory
                             {
                                 CategoryName = c.Name,
                                 GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency),

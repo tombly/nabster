@@ -1,19 +1,19 @@
-namespace Nabster.Historical;
+namespace Nabster.Performance;
 
-public class HistoricalReport
+public class PerformanceReport
 {
     public string BudgetName { get; set; } = string.Empty;
-    public List<HistoricalAccountGroup> AccountGroups { get; set; } = [];
+    public List<PerformanceAccountGroup> AccountGroups { get; set; } = [];
 }
 
-public class HistoricalAccountGroup
+public class PerformanceAccountGroup
 {
     public string Name { get; set; } = string.Empty;
     public List<string> AccountNames { get; set; } = [];
-    public List<HistoricalTransaction> Transactions { get; set; } = [];
+    public List<PerformanceTransaction> Transactions { get; set; } = [];
 }
 
-public class HistoricalTransaction
+public class PerformanceTransaction
 {
     public DateTimeOffset Date { get; set; }
     public decimal Amount { get; set; }

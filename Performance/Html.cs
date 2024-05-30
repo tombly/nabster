@@ -3,11 +3,11 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 
-namespace Nabster.Historical;
+namespace Nabster.Performance;
 
 public static class Html
 {
-    public static void Create(HistoricalReport report)
+    public static void Create(PerformanceReport report)
     {
         var html = new StringBuilder();
         html.AppendLine($"<html><body style=\"font-family: monospace;\">");
@@ -87,7 +87,7 @@ public static class Html
 
         html.AppendLine($"</body></html>");
 
-        var fileName = $"{report.BudgetName} Historical {DateTime.Now:yyyyMMdd}.html";
+        var fileName = $"{report.BudgetName} Performance {DateTime.Now:yyyyMMdd}.html";
         var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
 
         File.WriteAllText(filePath, html.ToString());

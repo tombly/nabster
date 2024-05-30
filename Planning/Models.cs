@@ -1,22 +1,22 @@
-namespace Nabster.Spend;
+namespace Nabster.Planning;
 
-public class SpendReport
+public class PlanningReport
 {
     public string BudgetName { get; set; } = string.Empty;
-    public List<SpendGroup> Groups { get; set; } = [];
+    public List<PlanningGroup> Groups { get; set; } = [];
     public decimal MonthlyTotal { get; set; }
     public decimal YearlyTotal { get; set; }
 }
 
-public class SpendGroup
+public class PlanningGroup
 {
     public string CategoryGroupName { get; set; } = string.Empty;
-    public List<SpendCategory> Categories { get; set; } = [];
+    public List<PlanningCategory> Categories { get; set; } = [];
     public decimal MonthlyTotal { get; set; }
     public decimal YearlyTotal { get; set; }
 }
 
-public class SpendCategory
+public class PlanningCategory
 {
     public string CategoryName { get; set; } = string.Empty;
     public string GoalCadence { get; set; } = string.Empty;
