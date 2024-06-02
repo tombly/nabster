@@ -24,6 +24,12 @@ It generates the report and saves it as an Excel file to your Desktop. Here's wh
 | Goals | Vacation | None | Jun-15 | $1000.00 | $150.00 | 30% |
 ...
 
+## Report Types
+
+1. Planning report - Helps with planning your monthly spending.
+2. Performance report - Shows you the net gain/loss for specific groups of categories over the past year.
+3. Spend report - Tells you what you spent your money on in a given month based on the Memo field of a single category.
+
 ## How it was built
 I used [NSwag Studio](https://github.com/RicoSuter/NSwag/wiki/NSwagStudio) to generate the client for the YNAB API (I couldn't find an existing one that supports .NET 8). These are the configuration options used:
 - Namespace: Ynab.Api

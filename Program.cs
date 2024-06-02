@@ -11,7 +11,7 @@ public static class Program
         var reportName = args[0];
         var budgetName = args[1];
         var accessToken = args[2];
-        var inputFilePath = args[3];
+        var parameter = args[3];
 
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         var client = new Ynab.Api.Client(httpClient);
@@ -22,7 +22,10 @@ public static class Program
                 await Planning.Report.Generate(budgetName, client);
                 return;
             case "performance":
-                await Performance.Report.Generate(budgetName, client, inputFilePath);
+                await Performance.Report.Generate(budgetName, client, parameter);
+                return;
+            case "spend":
+                await Spend.Report.Generate(budgetName, client, parameter, "2024-05");
                 return;
         }
     }
