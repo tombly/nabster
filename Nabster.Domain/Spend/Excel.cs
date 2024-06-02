@@ -65,7 +65,7 @@ public static class Excel
         return row;
     }
 
-      private static IRow CreateGroupTotalRow(ISheet sheet, int rowCount, decimal total)
+    private static IRow CreateGroupTotalRow(ISheet sheet, int rowCount, decimal total)
     {
         var row = sheet.CreateRow(rowCount);
         row.CreateCell(0);
@@ -78,7 +78,7 @@ public static class Excel
         return row;
     }
 
-      private static IRow CreateReportTotalRow(ISheet sheet, int rowCount, decimal total)
+    private static IRow CreateReportTotalRow(ISheet sheet, int rowCount, decimal total)
     {
         var row = sheet.CreateRow(rowCount);
         row.CreateCell(0);

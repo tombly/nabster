@@ -22,7 +22,7 @@ public static class Report
         var categoryId = budget!.Categories!.FirstOrDefault(c => c.Name == categoryName)?.Id;
         var startOfMonth = new DateTimeOffset(DateTime.Parse(month).Year, DateTime.Parse(month).Month, 1, 0, 0, 0, TimeSpan.Zero);
         var transactions = (await client.GetTransactionsAsync(budgetId.ToString(), startOfMonth, null, null)).Data.Transactions;
-        
+
         transactions = transactions
             .Where(t => t.Category_id == categoryId)
             .Where(t => t.Date.Month == DateTime.Parse(month).Month)

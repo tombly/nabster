@@ -6,9 +6,13 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/bin/Debug/net8.0/Nabster.dll",
-            "args":["planning", "<BUDGET NAME>", "<ACCESS TOKEN>", "<INPUT FILE PATH>"],
-            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "planning",
+                "--budget-name",
+                "Family Budget"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -17,9 +21,15 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/bin/Debug/net8.0/Nabster.dll",
-            "args":["performance", "<BUDGET NAME>", "<ACCESS TOKEN>", "<INPUT FILE PATH>"],
-            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "performance",
+                "--budget-name",
+                "Family Budget",
+                "--file-path",
+                "${workspaceFolder}/"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -28,9 +38,15 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/bin/Debug/net8.0/Nabster.dll",
-            "args":["spend", "<BUDGET NAME>", "<ACCESS TOKEN>", "<CATEGORY NAME>"],
-            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "spend",
+                "--budget-name",
+                "Family Budget",
+                "--category-name",
+                "Discretionary"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
         }

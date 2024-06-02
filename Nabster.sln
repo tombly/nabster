@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nabster", "Nabster.csproj", "{05DBA412-82A5-436D-9328-2C0D26D2FB51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Domain", "Nabster.Domain\Nabster.Domain.csproj", "{D924B73D-3D4C-4FEE-8435-025D89237F3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Cli", "Nabster.Cli\Nabster.Cli.csproj", "{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{05DBA412-82A5-436D-9328-2C0D26D2FB51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05DBA412-82A5-436D-9328-2C0D26D2FB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05DBA412-82A5-436D-9328-2C0D26D2FB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05DBA412-82A5-436D-9328-2C0D26D2FB51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
