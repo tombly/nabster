@@ -2,22 +2,34 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Planning Report",
+            "name": "Local:Functions",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
+            "name": "Local:CategoryActivity",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "planning",
+                "category-activity",
                 "--budget-name",
-                "Family Budget"
+                "<SET THIS>",
+                "--category-name",
+                "<SET THIS>",
+                "--phone-number",
+                "<SET THIS>",
+                "--config-file",
+                "config.local.json"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
         {
-            "name": "Performance Report",
+            "name": "Local:Performance",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
@@ -25,16 +37,35 @@
             "args": [
                 "performance",
                 "--budget-name",
-                "Family Budget",
+                "<SET THIS>",
                 "--file-path",
-                "${workspaceFolder}/"
+                "${workspaceFolder}/AccountGroups.csv",
+                "--config-file",
+                "config.local.json"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
         {
-            "name": "Spend Report",
+            "name": "Local:Planning",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "planning",
+                "--budget-name",
+                "<SET THIS>",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Local:Spend",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
@@ -42,9 +73,83 @@
             "args": [
                 "spend",
                 "--budget-name",
-                "Family Budget",
+                "<SET THIS>",
                 "--category-name",
-                "Discretionary"
+                "<SET THIS>",
+                "--month",
+                "2024-05",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Azure:CategoryActivity",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "category-activity",
+                "--budget-name",
+                "<SET THIS>",
+                "--category-name",
+                "<SET THIS>",
+                "--phone-number",
+                "<SET THIS>"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Azure:Performance",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "performance",
+                "--budget-name",
+                "<SET THIS>",
+                "--file-path",
+                "${workspaceFolder}/AccountGroups.csv"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Azure:Planning",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "planning",
+                "--budget-name",
+                "<SET THIS>"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Azure:Spend",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "spend",
+                "--budget-name",
+                "<SET THIS>",
+                "--category-name",
+                "<SET THIS>",
+                "--month",
+                "2024-05"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,

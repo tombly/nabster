@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="/Users/tomb/.nuget/packages/dotnetcore.npoi/1.2.3/contentFiles/any/netstandard2.0/NOTICE.TXT" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="OxyPlot.Core" Version="2.1.2" />
-    <PackageReference Include="spectre.console" Version="0.49.1" />
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageReference Include="Twilio" Version="7.1.0" />
   </ItemGroup>
 
 </Project>
