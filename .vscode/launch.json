@@ -15,8 +15,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "category-activity",
-                "--budget-name",
-                "<SET THIS>",
                 "--category-name",
                 "<SET THIS>",
                 "--phone-number",
@@ -36,8 +34,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "performance",
-                "--budget-name",
-                "<SET THIS>",
                 "--file-path",
                 "${workspaceFolder}/AccountGroups.csv",
                 "--config-file",
@@ -55,8 +51,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "planning",
-                "--budget-name",
-                "<SET THIS>",
                 "--config-file",
                 "config.local.json"
             ],
@@ -72,8 +66,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "spend",
-                "--budget-name",
-                "<SET THIS>",
                 "--category-name",
                 "<SET THIS>",
                 "--month",
@@ -93,8 +85,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "category-activity",
-                "--budget-name",
-                "<SET THIS>",
                 "--category-name",
                 "<SET THIS>",
                 "--phone-number",
@@ -112,8 +102,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "performance",
-                "--budget-name",
-                "<SET THIS>",
                 "--file-path",
                 "${workspaceFolder}/AccountGroups.csv"
             ],
@@ -128,9 +116,7 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "planning",
-                "--budget-name",
-                "<SET THIS>"
+                "planning"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -144,8 +130,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "spend",
-                "--budget-name",
-                "<SET THIS>",
                 "--category-name",
                 "<SET THIS>",
                 "--month",

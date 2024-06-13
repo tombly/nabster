@@ -38,22 +38,22 @@ public class ReportEngine(
 
     private async Task<IActionResult> CategoryActivity(JsonNode request)
     {
-        var budgetName = request.GetStringValue("budget");
-        var categoryName = request.GetStringValue("category");
-        var phoneNumber = request.GetStringValue("phone");
+        var budgetName = request.GetOptionalStringValue("budget");
+        var categoryName = request.GetRequiredStringValue("category");
+        var phoneNumbers = request.GetRequiredStringValue("phone");
 
         _logger.LogInformation("Generating report");
 
-        var activity = await _categoryActivity.Generate(budgetName, categoryName);
-        _categoryActivityToSms.Notify(categoryName, phoneNumber, activity);
+        var report = await _categoryActivity.Generate(budgetName, categoryName);
+        _categoryActivityToSms.Notify(categoryName, phoneNumbers, report);
 
         return new OkResult();
     }
 
     private async Task<IActionResult> Performance(JsonNode request)
     {
-        var budgetName = request.GetStringValue("budget");
-        var groups = request.GetStringListValue("groups");
+        var budgetName = request.GetOptionalStringValue("budget");
+        var groups = request.GetRequiredStringListValue("groups");
 
         var report = await _performance.Generate(budgetName, groups);
         var file = Domain.Exports.PerformanceToHtml.Create(report);
@@ -63,7 +63,7 @@ public class ReportEngine(
 
     private async Task<IActionResult> Planning(JsonNode request)
     {
-        var budgetName = request.GetStringValue("budget");
+        var budgetName = request.GetOptionalStringValue("budget");
 
         var report = await _planning.Generate(budgetName);
         var file = Domain.Exports.PlanningToExcel.Create(report);
@@ -73,9 +73,9 @@ public class ReportEngine(
 
     private async Task<IActionResult> Spend(JsonNode request)
     {
-        var budgetName = request.GetStringValue("budget");
-        var categoryName = request.GetStringValue("category");
-        var month = request.GetStringValue("month");
+        var budgetName = request.GetOptionalStringValue("budget");
+        var categoryName = request.GetRequiredStringValue("category");
+        var month = request.GetRequiredStringValue("month");
 
         var report = await _spend.Generate(budgetName, categoryName, month);
         var file = Domain.Exports.SpendToExcel.CreateFile(report);

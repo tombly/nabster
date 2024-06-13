@@ -17,11 +17,14 @@ public class SmsService
         TwilioClient.Init(twilioAccountSid, twilioAuthToken);
     }
 
-    public void Send(string phoneNumber, string message)
+    public void Send(string phoneNumbers, string message)
     {
-        MessageResource.Create(
-            from: new PhoneNumber(_twilioPhoneNumber),
-            to: new PhoneNumber(phoneNumber),
-            body: message);
+        foreach (var phoneNumber in phoneNumbers.Split(','))
+        {
+            MessageResource.Create(
+                from: new PhoneNumber(_twilioPhoneNumber),
+                to: new PhoneNumber(phoneNumber),
+                body: message);
+        }
     }
 }

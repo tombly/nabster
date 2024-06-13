@@ -11,15 +11,18 @@ public class Performance(YnabApiClient ynabClient)
 {
     private readonly YnabApiClient _ynabClient = ynabClient;
 
-    public async Task<PerformanceReport> Generate(string budgetName, List<string> groups)
+    public async Task<PerformanceReport> Generate(string? budgetName, List<string> groups)
     {
+        // Find a budget to use.
+        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
+
         // Create our list of account groups.
         var accountGroupMap = CreateMapFromGroupList(groups);
 
         // Seed the report with the account groups.
         var model = new PerformanceReport
         {
-            BudgetName = budgetName,
+            BudgetName = budgetDetail.Name,
             AccountGroups = accountGroupMap.Values.Distinct().Select(groupName =>
             {
                 return new PerformanceAccountGroup
@@ -30,16 +33,11 @@ public class Performance(YnabApiClient ynabClient)
             }).ToList()
         };
 
-        // Find the budget we're looking for.
-        var budgetId = (await _ynabClient.GetBudgetsAsync(false)).Data.Budgets.FirstOrDefault(b => b.Name == budgetName)?.Id;
-        if (budgetId == null)
-            throw new Exception($"Budget not found: '{budgetName}'");
-
         // Get all the accounts so we can figure out which are inactive.
-        var accounts = (await _ynabClient.GetAccountsAsync(budgetId!.ToString()!, null)!).Data.Accounts;
+        var accounts = (await _ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts;
 
         // Get all the transactions.
-        var transactions = (await _ynabClient.GetTransactionsAsync(budgetId.ToString()!, null, null, null)).Data.Transactions.ToList();
+        var transactions = (await _ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
 
         // Group the transactions into the account groups.
         foreach (var transaction in transactions)

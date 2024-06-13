@@ -10,20 +10,15 @@ public class Spend(YnabApiClient ynabClient)
 {
     private readonly YnabApiClient _ynabClient = ynabClient;
 
-    public async Task<SpendReport> Generate(string budgetName, string categoryName, string month)
+    public async Task<SpendReport> Generate(string? budgetName, string categoryName, string month)
     {
-        // Find the budget we're looking for.
-        var budgetId = (await _ynabClient.GetBudgetsAsync(false)).Data.Budgets.FirstOrDefault(b => b.Name == budgetName)?.Id;
-        if (budgetId == null)
-            throw new Exception($"Budget not found: '{budgetName}'");
-
-        // Retrieve the budget from the API.
-        var budget = (await _ynabClient.GetBudgetByIdAsync(budgetId.ToString()!, null))?.Data.Budget;
+        // Find a budget to use.
+        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // Get all the transactions for the current month for the given category.
-        var categoryId = budget!.Categories!.FirstOrDefault(c => c.Name == categoryName)?.Id;
+        var categoryId = budgetDetail.Categories!.FirstOrDefault(c => c.Name == categoryName)?.Id;
         var startOfMonth = new DateTimeOffset(DateTime.Parse(month).Year, DateTime.Parse(month).Month, 1, 0, 0, 0, TimeSpan.Zero);
-        var transactions = (await _ynabClient.GetTransactionsAsync(budgetId!.ToString()!, startOfMonth, null, null)).Data.Transactions;
+        var transactions = (await _ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), startOfMonth, null, null)).Data.Transactions;
 
         transactions = transactions
             .Where(t => t.Category_id == categoryId)
@@ -36,7 +31,7 @@ public class Spend(YnabApiClient ynabClient)
         // Group the transactions by their memo text prefix.
         var model = new SpendReport
         {
-            BudgetName = budgetName,
+            BudgetName = budgetDetail.Name,
             Groups = transactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroup
             {
                 MemoPrefix = g.Key,

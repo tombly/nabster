@@ -11,26 +11,21 @@ public class Planning(YnabApiClient ynabClient)
 {
     private readonly YnabApiClient _ynabClient = ynabClient;
 
-    public async Task<PlanningReport> Generate(string budgetName)
+    public async Task<PlanningReport> Generate(string? budgetName)
     {
-        // Find the budget we're looking for.
-        var budgetId = (await _ynabClient.GetBudgetsAsync(false)).Data.Budgets.FirstOrDefault(b => b.Name == budgetName)?.Id;
-        if (budgetId == null)
-            throw new Exception($"Budget not found: '{budgetName}'");
-
-        // Retrieve the budget from the API.
-        var budget = (await _ynabClient.GetBudgetByIdAsync(budgetId.ToString()!, null))?.Data.Budget;
+        // Find a budget to use.
+        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // The categories don't have their group name property set automatically
         // (but they're returned in a separate collection) so we patch them here.
-        foreach (var category in budget!.Categories!)
-            category.Category_group_name = budget.Category_groups!.FirstOrDefault(g => g.Id == category.Category_group_id)?.Name;
+        foreach (var category in budgetDetail.Categories!)
+            category.Category_group_name = budgetDetail.Category_groups!.FirstOrDefault(g => g.Id == category.Category_group_id)?.Name;
 
         // Build our model.
         var model = new PlanningReport
         {
-            BudgetName = budgetName,
-            Groups = [.. budget.Categories
+            BudgetName = budgetDetail.Name,
+            Groups = [.. budgetDetail.Categories
                 .Where(c => c.Category_group_id != Guid.Parse("1a129df6-4857-4ed9-8961-5b803b27707e")) // Skip credit card categories.
                 .Where(c => c.Category_group_id != Guid.Parse("5fb28acc-c607-42dc-ab04-7963a6fe718d")) // Skip internal categories.
                 .Select(c => c.Category_group_name)
@@ -39,7 +34,7 @@ public class Planning(YnabApiClient ynabClient)
                     new PlanningGroup
                     {
                         CategoryGroupName = groupName!,
-                        Categories = [.. budget.Categories
+                        Categories = [.. budgetDetail.Categories
                             .Where(c => c.Category_group_name == groupName)
                             .Where(c => !c.Deleted)
                             .Where(c => !c.Hidden)

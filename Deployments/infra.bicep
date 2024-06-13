@@ -28,8 +28,8 @@ param twilioAuthToken string
 @secure()
 param twilioPhoneNumber string
 
-@description('The budget name to send to the function (used by logic app).')
-param budget string
+@description('The (optional) budget name to send to the function (used by logic app).')
+param budget string = ''
 
 @description('The category name to send to the function (used by logic app).')
 param category string
