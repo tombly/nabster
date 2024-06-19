@@ -59,7 +59,7 @@ public static class PerformanceToHtml
             plotModel.PlotMargins = new OxyThickness(50, 0, 0, 50);
 
             using var stream = new MemoryStream();
-            SvgExporter.Export(plotModel, stream, 400, 400, false);
+            SvgExporter.Export(plotModel, stream, 450, 450, false);
             string svg = Encoding.UTF8.GetString(stream.ToArray());
 
             html.AppendLine($"<div style=\"font-size: x-large; margin-bottom: 8px;\">{accountGroup.Name}</div>");
