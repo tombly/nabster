@@ -26,7 +26,7 @@ public static class ExcelExtensions
     public static ICellStyle AddFontStyle(this ICellStyle style, IWorkbook workbook, bool isBold = false, bool isGray = false)
     {
         var font = workbook.CreateFont();
-        font.FontHeightInPoints = 14;
+        font.FontHeightInPoints = 11;
         font.FontName = "Aptos";
         font.IsBold = isBold;
         if (isGray)
