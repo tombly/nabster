@@ -32,6 +32,7 @@ public class Spend(YnabApiClient ynabClient)
         var model = new SpendReport
         {
             BudgetName = budgetDetail.Name,
+            MonthName = DateTime.Parse(month).ToString("MMMM yyyy"),
             Groups = transactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroup
             {
                 MemoPrefix = g.Key,
@@ -53,6 +54,7 @@ public class Spend(YnabApiClient ynabClient)
 public class SpendReport
 {
     public string BudgetName { get; set; } = string.Empty;
+    public string MonthName { get; set; } = string.Empty;
     public List<SpendGroup> Groups { get; set; } = [];
     public decimal Total => Groups.SelectMany(g => g.Transactions).Sum(t => t.Amount);
 }

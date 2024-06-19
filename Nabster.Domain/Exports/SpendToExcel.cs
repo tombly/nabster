@@ -31,6 +31,7 @@ public static class SpendToExcel
         var sheet = workbook.CreateSheet("Spend");
         var rowCount = 0;
 
+        CreateTitleRow(sheet, rowCount++, $"Spend Report - {report.BudgetName} - {report.MonthName}");
         foreach (var group in report.Groups)
         {
             CreateGroupTitleRow(sheet, rowCount++, group.MemoPrefix);
@@ -48,6 +49,14 @@ public static class SpendToExcel
             sheet.SetColumnWidth(columnCount++, 4500);
 
         return sheet;
+    }
+
+    private static IRow CreateTitleRow(ISheet sheet, int rowCount, string title)
+    {
+        var row = sheet.CreateRow(rowCount);
+        row.CreateCell(0).SetCellValue(title);
+        row.ApplyStyle(sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, true));
+        return row;
     }
 
     private static IRow CreateGroupTitleRow(ISheet sheet, int rowCount, string memoPrefix)
