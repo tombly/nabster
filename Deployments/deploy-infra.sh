@@ -23,16 +23,6 @@ az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee
 logic_identity_id=$(az resource show --name $logic_app --resource-group $resource_group --resource-type "Microsoft.Logic/workflows" --query "identity.principalId" -o tsv)
 az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $logic_identity_id --scope $scope_prefix/FunctionAppKey
 
-# Deploy the function app code.
-cd ../Nabster.Functions
-dotnet clean --configuration Release /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
-dotnet publish --configuration Release /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
-cd bin/Release/net8.0/publish/
-zip functions.zip . -r
-az functionapp deployment source config-zip -g $resource_group -n $function_app --src functions.zip 
-rm functions.zip
-cd ../../../../../Deployments
-
 # Assign yourself the "Key Vault Administrator" role so that the CLI can access
 # the key vault when you run it.
 az role assignment create --role 00482a5a-887f-4fb3-b363-3b7fe8e74483 --assignee $(az ad signed-in-user show --query id -o tsv) --scope $(az keyvault show --name $key_vault --query id -o tsv)
