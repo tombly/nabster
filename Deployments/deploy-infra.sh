@@ -1,5 +1,5 @@
-if [ -z "$1" ]; then
-    echo "Usage: deploy-infra.sh <resource_name>"
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: deploy-infra.sh <resource_name> <parameter_file>"
     exit 1
 fi
 
@@ -13,7 +13,7 @@ echo "Deploying to $resource_group..."
 
 # Create a resource group and deploy the infrastructure into it.
 az group create --name $resource_group --location westus
-az deployment group create --name deploy --resource-group $resource_group --template-file infra.bicep --parameters infra.bicepparam
+az deployment group create --name deploy --resource-group $resource_group --template-file infra.bicep --parameters $2
 
 # Grant the function app's and logic app's managed identities the Key Vault
 # Secrets User role for the key vault secrets they need.
