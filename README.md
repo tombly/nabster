@@ -45,7 +45,13 @@ Edit the `Deployments/infra.bicepparam` file to add your YNAB personal access to
 
 **2. Deploy the infrastructure**
 
-`cd` into the `Deployments` folder and run the `deploy.sh` script. Alternatively, the function app can also be run locally.
+```shell
+cd Deployments
+./deploy_infra.sh mynabster
+./deploy_code.sh mynabster
+```
+
+The function app can also be run locally and supports debugging with breakpoints.
 
 **3. Run the CLI**
 

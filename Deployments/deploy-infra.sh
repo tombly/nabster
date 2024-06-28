@@ -1,9 +1,15 @@
+if [ -z "$1" ]; then
+    echo "Usage: deploy-infra.sh <resource_name>"
+    exit 1
+fi
 
 # Create variables for our resource names.
-resource_group="mynabster"
-function_app="mynabster-functionapp"
-key_vault="mynabster-keyvault"
-logic_app="mynabster-logicapp"
+resource_group=$1
+function_app="$1-functionapp"
+key_vault="$1-keyvault"
+logic_app="$1-logicapp"
+
+echo "Deploying to $resource_group..."
 
 # Create a resource group and deploy the infrastructure into it.
 az group create --name $resource_group --location westus

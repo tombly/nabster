@@ -1,5 +1,12 @@
-resource_group="mynabster"
-function_app="mynabster-functionapp"
+if [ -z "$1" ]; then
+    echo "Usage: deploy-code.sh <resource_name>"
+    exit 1
+fi
+
+resource_group=$1
+function_app="$1-functionapp"
+
+echo "Deploying to $function_app..."
 
 cd ../Nabster.Functions
 dotnet clean --configuration Release /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
