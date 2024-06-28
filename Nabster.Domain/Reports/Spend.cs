@@ -1,3 +1,4 @@
+using Nabster.Domain.Extensions;
 using Ynab.Api.Client;
 
 namespace Nabster.Domain.Reports;
@@ -6,13 +7,10 @@ namespace Nabster.Domain.Reports;
 /// Generates a monthly spend report for a specific category that groups and
 /// totals transactions based on prefixes in their memo text.
 /// </summary>
-public class Spend(YnabApiClient ynabClient)
+public class Spend(YnabApiClient _ynabClient)
 {
-    private readonly YnabApiClient _ynabClient = ynabClient;
-
     public async Task<SpendReport> Generate(string? budgetName, string categoryName, string month)
     {
-        // Find a budget to use.
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // Get all the transactions for the current month for the given category.

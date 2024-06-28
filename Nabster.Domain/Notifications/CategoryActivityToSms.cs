@@ -3,17 +3,11 @@ using Nabster.Domain.Services;
 
 namespace Nabster.Domain.Notifications;
 
-public class CategoryActivityToSms(SmsService smsService)
+public class ActivityToSms(SmsService _smsService)
 {
-    private readonly SmsService _smsService = smsService;
-
-    public void Notify(string categoryName, string phoneNumbers, CategoryActivityReport report)
+    public void Notify(string categoryName, string phoneNumbers, ActivityReport report)
     {
-        var message = default(string);
-        if (report.Target != null)
-            message = $"Current {categoryName} spending: {report.Activity:c0} of {report.Target:c0} ({report.Activity / report.Target:p0})";
-        else
-            message = $"Current {categoryName} spending: {report.Activity:c0}";
+        var message = $"Current {categoryName} spending: {report.Activity:c0} of {report.Need:c0} ({report.Activity / report.Need:p0})";
         _smsService.Send(phoneNumbers, message);
     }
 }

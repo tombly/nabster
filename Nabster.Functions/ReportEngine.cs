@@ -3,49 +3,63 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Nabster.Domain.Exceptions;
 using Nabster.Functions.Extensions;
 
 namespace Nabster.Functions;
 
 public class ReportEngine(
-    ILogger<ReportEngine> logger,
-    Domain.Reports.CategoryActivity categoryActivity,
-    Domain.Reports.Performance performance,
-    Domain.Reports.Planning planning,
-    Domain.Reports.Spend spend,
-    Domain.Notifications.CategoryActivityToSms categoryActivityToSms)
+    ILogger<ReportEngine> _logger,
+    Domain.Reports.Activity _activity,
+    Domain.Reports.Performance _performance,
+    Domain.Reports.Planning _planning,
+    Domain.Reports.Spend _spend,
+    Domain.Notifications.ActivityToSms _categoryActivityToSms)
 {
-    private readonly ILogger<ReportEngine> _logger = logger;
-    private readonly Domain.Reports.CategoryActivity _categoryActivity = categoryActivity;
-    private readonly Domain.Reports.Performance _performance = performance;
-    private readonly Domain.Reports.Planning _planning = planning;
-    private readonly Domain.Reports.Spend _spend = spend;
-    private readonly Domain.Notifications.CategoryActivityToSms _categoryActivityToSms = categoryActivityToSms;
-
     [Function("ReportEngine")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "report/{reportName}")] HttpRequest req, string reportName, FunctionContext _)
     {
-        var request = await req.AsJsonNode();
-        return reportName switch
+        try
         {
-            "category-activity" => await CategoryActivity(request),
-            "performance" => await Performance(request),
-            "planning" => await Planning(request),
-            "spend" => await Spend(request),
-            _ => new BadRequestResult(),
-        };
+            _logger.LogInformation("Report request received: {reportName}", reportName);
+
+            var request = await req.AsJsonNode();
+            return reportName switch
+            {
+                "activity" => await Activity(request),
+                "performance" => await Performance(request),
+                "planning" => await Planning(request),
+                "spend" => await Spend(request),
+                _ => new BadRequestObjectResult($"Invalid report name '{reportName}'"),
+            };
+        }
+        catch (MissingArgumentException exception)
+        {
+            return new BadRequestObjectResult(exception.Message);
+        }
+        catch (CategoryOrGroupNotFoundException exception)
+        {
+            return new NotFoundObjectResult(exception.Message);
+        }
+        catch (BudgetNotFoundException exception)
+        {
+            return new NotFoundObjectResult(exception.Message);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error processing report request");
+            return new StatusCodeResult(500);
+        }
     }
 
-    private async Task<IActionResult> CategoryActivity(JsonNode request)
+    private async Task<IActionResult> Activity(JsonNode request)
     {
         var budgetName = request.GetOptionalStringValue("budget");
-        var categoryName = request.GetRequiredStringValue("category");
+        var categoryOrGroupName = request.GetRequiredStringValue("category");
         var phoneNumbers = request.GetRequiredStringValue("phone");
 
-        _logger.LogInformation("Generating report");
-
-        var report = await _categoryActivity.Generate(budgetName, categoryName);
-        _categoryActivityToSms.Notify(categoryName, phoneNumbers, report);
+        var report = await _activity.Generate(budgetName, categoryOrGroupName);
+        _categoryActivityToSms.Notify(categoryOrGroupName, phoneNumbers, report);
 
         return new OkResult();
     }

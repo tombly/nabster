@@ -11,11 +11,11 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddTransient<Reports.CategoryActivity>();
+        services.AddTransient<Reports.Activity>();
         services.AddTransient<Reports.Performance>();
         services.AddTransient<Reports.Planning>();
         services.AddTransient<Reports.Spend>();
-        services.AddTransient<Notifications.CategoryActivityToSms>();
+        services.AddTransient<Notifications.ActivityToSms>();
         services.AddSingleton<YnabApiClient>(sp =>
         {
             var ynabAccessToken = Environment.GetEnvironmentVariable("YNAB_ACCESS_TOKEN") ?? throw new Exception("YNAB_ACCESS_TOKEN not set");

@@ -1,3 +1,5 @@
+using Nabster.Domain.Extensions;
+using Nabster.Domain.Services;
 using Ynab.Api.Client;
 
 namespace Nabster.Domain.Reports;
@@ -7,13 +9,10 @@ namespace Nabster.Domain.Reports;
 /// annually, etc.) recurring goals are supported, as well as non-recurring
 /// goals.
 /// </summary>
-public class Planning(YnabApiClient ynabClient)
+public class Planning(CalculateService _calculateService, YnabApiClient _ynabClient)
 {
-    private readonly YnabApiClient _ynabClient = ynabClient;
-
     public async Task<PlanningReport> Generate(string? budgetName)
     {
-        // Find a budget to use.
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // The categories don't have their group name property set automatically
@@ -45,7 +44,7 @@ public class Planning(YnabApiClient ynabClient)
                                 GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
                                 GoalTarget = c.Goal_target > 0 ? (c.Goal_target.Value / 1000m) : 0,
                                 GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
-                                MonthlyCost = BuildMonthlyCost(c)
+                                MonthlyCost = _calculateService.MonthlyNeed(c)
                             })
                             .OrderBy(c => c.CategoryName)]
                     })
@@ -140,60 +139,6 @@ public class Planning(YnabApiClient ynabClient)
         // There will never be both a goal day and a goal target month so we just
         // show one of them as the due date.
         return targetMonth ?? day;
-    }
-
-    /// <summary>
-    /// Figures out what the monthly cost of a category is. It first calculates
-    /// a multiplier based on the repeat frequency and then uses it to calculate
-    /// the monthly cost based on the remaining amount to reach the target. For
-    /// non-recurring goals it simply divides the remaining amount by the
-    /// remaining months.
-    /// </summary>
-    private static decimal BuildMonthlyCost(Category category)
-    {
-        var multiplier = default(decimal?);
-        switch (category.Goal_cadence)
-        {
-            case 0: // No repeat
-                break;
-            case 1: // Monthly
-                multiplier = 1m / category.Goal_cadence_frequency;
-                break;
-            case 2: // Weekly
-                multiplier = 4m * category.Goal_cadence_frequency;
-                break;
-            case 3: // Every 2 months
-            case 4: // Every 3 months
-            case 5: // Every 4 months
-            case 6: // Every 5 months
-            case 7: // Every 6 months
-            case 8: // Every 7 months
-            case 9: // Every 8 months
-            case 10: // Every 9 months
-            case 11: // Every 10 months
-            case 12: // Every 11 months
-                multiplier = 1m / (category.Goal_cadence - 1m);
-                break;
-            case 13: // Yearly
-                multiplier = 1m / (12m * category.Goal_cadence_frequency);
-                break;
-            case 14: // Every 2 years
-                multiplier = 1m / 24m;
-                break;
-        }
-
-        // If we have a multiplier then it's recurring.
-        if (multiplier != null)
-        {
-            return category.Goal_target / 1000m * multiplier ?? 0;
-        }
-        else
-        {
-            if (category.Goal_overall_left > 0)
-                return category.Goal_overall_left / 1000m / category.Goal_months_to_budget ?? 0;
-            else
-                return 0;
-        }
     }
 
     private static string SuffixForDay(int day)

@@ -1,3 +1,4 @@
+using Nabster.Domain.Extensions;
 using Ynab.Api.Client;
 
 namespace Nabster.Domain.Reports;
@@ -7,13 +8,10 @@ namespace Nabster.Domain.Reports;
 /// includes an Excel spreadsheet with the data and a (self-contained) HTML
 /// file with charts.
 /// </summary>
-public class Performance(YnabApiClient ynabClient)
+public class Performance(YnabApiClient _ynabClient)
 {
-    private readonly YnabApiClient _ynabClient = ynabClient;
-
     public async Task<PerformanceReport> Generate(string? budgetName, List<string> groups)
     {
-        // Find a budget to use.
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // Create our list of account groups.

@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Nabster.Domain.Exceptions;
 
 namespace Nabster.Functions.Extensions;
 
@@ -10,9 +11,9 @@ public static class JsonNodeExtensions
   /// </summary>
   public static string GetRequiredStringValue(this JsonNode node, string key)
   {
-    var value = (node[key] ?? throw new Exception($"JSON missing {key}")).GetValue<string>();
+    var value = (node[key] ?? throw new MissingArgumentException($"JSON missing {key}")).GetValue<string>();
     if (string.IsNullOrWhiteSpace(value))
-      throw new Exception($"JSON property {key} has empty value");
+      throw new MissingArgumentException($"JSON property {key} has empty value");
     return value;
   }
 
@@ -34,9 +35,9 @@ public static class JsonNodeExtensions
   /// </summary>
   public static List<string> GetRequiredStringListValue(this JsonNode node, string key)
   {
-    var value = (node[key] ?? throw new Exception($"Json missing {key}")).AsArray().Select(n => n?.GetValue<string>() ?? string.Empty).ToList();
+    var value = (node[key] ?? throw new MissingArgumentException($"Json missing {key}")).AsArray().Select(n => n?.GetValue<string>() ?? string.Empty).ToList();
     if (value.Count == 0)
-      throw new Exception($"JSON property {key} has empty list");
+      throw new MissingArgumentException($"JSON property {key} has empty list");
     return value;
   }
 }

@@ -6,23 +6,39 @@ using Twilio.Security;
 
 namespace Nabster.Functions
 {
-    public class IncomingSms(ILogger<IncomingSms> logger)
+    public class IncomingSms(
+                    ILogger<IncomingSms> _logger,
+                    Domain.Reports.Activity _activity,
+                    Domain.Notifications.ActivityToSms _categoryActivityToSms)
     {
         [Function("IncomingSms")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest request)
         {
-            logger.LogInformation("Incoming SMS received");
+            _logger.LogInformation("Incoming SMS received");
 
             if (!await ValidateRequest(request))
                 return new ForbidResult();
 
             var content = await request.ReadFormAsync();
             foreach (var key in content.Keys)
-            {
-                logger.LogWarning($"{key}: {content[key]}");
-            }
+                _logger.LogInformation($"{key}: {content[key]}");
+
+            var message = content["Body"].ToString();
+            if (message.StartsWith("activity:", StringComparison.InvariantCultureIgnoreCase))
+                await ReplyCategoryActivity(message, content["From"].ToString());
+            else
+                _logger.LogWarning("Received unknown message {message}", message);
 
             return new OkResult();
+        }
+
+        private async Task ReplyCategoryActivity(string message, string phoneNumber)
+        {
+            var tokens = message.Split(' ');
+            var commandName = tokens[0];
+            var categoryName = tokens[1];
+            var report = await _activity.Generate(null, categoryName);
+            _categoryActivityToSms.Notify(categoryName, phoneNumber, report);
         }
 
         private static async Task<bool> ValidateRequest(HttpRequest request)
