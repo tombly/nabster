@@ -5,7 +5,7 @@ namespace Nabster.Domain.Notifications;
 
 public class MessageToSms(SmsService _smsService)
 {
-    public void Notify(string phoneNumbers, string message)
+    public void Notify(string message, string phoneNumbers)
     {
         _smsService.Send(phoneNumbers, message);
     }

@@ -18,10 +18,10 @@ public class MessagingService(
         switch (command)
         {
             case "activity":
-                await ReplyActivity(message, parameter, phoneNumber);
+                await ReplyActivity(null, parameter, phoneNumber);
                 break;
             case "funded":
-                await ReplyFunded(message, parameter, phoneNumber);
+                await ReplyFunded(null, parameter, phoneNumber);
                 break;
             default:
                 _messageToSms.Notify($"Unrecognized command {command}", phoneNumber);
@@ -32,14 +32,14 @@ public class MessagingService(
     public async Task ReplyActivity(string? budgetName, string categoryOrGroupName, string phoneNumbers)
     {
         var report = await _activity.Generate(budgetName, categoryOrGroupName);
-        _activityToSms.Notify(phoneNumbers, report);
+        _activityToSms.Notify(report, phoneNumbers);
 
     }
 
     public async Task ReplyFunded(string? budgetName, string categoryOrGroupName, string phoneNumbers)
     {
         var report = await _funded.Generate(budgetName, categoryOrGroupName);
-        _fundedToSms.Notify(phoneNumbers, report);
+        _fundedToSms.Notify(report, phoneNumbers);
 
     }
 

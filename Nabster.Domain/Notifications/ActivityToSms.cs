@@ -5,7 +5,7 @@ namespace Nabster.Domain.Notifications;
 
 public class ActivityToSms(SmsService _smsService)
 {
-    public void Notify(string phoneNumbers, ActivityReport report)
+    public void Notify(ActivityReport report, string phoneNumbers)
     {
         var message = $"Current {report.Name} spending: {report.Activity:c0} of {report.Need:c0} ({report.Activity / report.Need:p0})";
         _smsService.Send(phoneNumbers, message);

@@ -17,15 +17,18 @@ namespace Nabster.Functions
                 return new ForbidResult();
 
             var content = await request.ReadFormAsync();
+            var body = content["Body"].ToString();
+            var phoneNumber = content["From"].ToString();
 
             try
             {
-                await _messagingService.ReplyToMessage(content["Body"].ToString(), content["From"].ToString());
+                _logger.LogInformation($"Message '{body}' from {phoneNumber}");
+                await _messagingService.ReplyToMessage(body, phoneNumber);
             }
             catch(Exception exception)
             {
                 _logger.LogError(exception, "Failed processing incoming SMS");
-                _messagingService.ReplyMessage("Hm, that didn't work", content["From"].ToString());
+                _messagingService.ReplyMessage("Hm, that didn't work", phoneNumber);
             }
 
             return new OkResult();

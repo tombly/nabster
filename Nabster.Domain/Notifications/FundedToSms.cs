@@ -11,7 +11,7 @@ namespace Nabster.Domain.Notifications;
 /// </summary>
 public class FundedToSms(SmsService _smsService)
 {
-    public void Notify(string phoneNumbers, FundedReport report)
+    public void Notify(FundedReport report, string phoneNumbers)
     {
         _smsService.Send(phoneNumbers, report.Categories.Count == 1 ?
                             BuildMessageForCategory(report) :
