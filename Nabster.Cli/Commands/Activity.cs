@@ -5,11 +5,11 @@ using Spectre.Console;
 
 namespace Nabster.Cli;
 
-public static class CategoryActivity
+public static class Activity
 {
-    public static void AddCategoryActivity(this RootCommand rootCommand)
+    public static void AddActivity(this RootCommand rootCommand)
     {
-        var command = new Command("category-activity", "Send an SMS with a category's current activity.");
+        var command = new Command("activity", "Send an SMS with a category or group's current activity.");
 
         var budgetNameOption = new Option<string>(
             aliases: ["--budget-name", "-b"],
@@ -17,7 +17,7 @@ public static class CategoryActivity
 
         var categoryNameOption = new Option<string>(
             aliases: ["--category-name", "-c"],
-            description: "The name of the category to generate the report for.");
+            description: "The name of the category or group to generate the report for.");
 
         var phoneNumberOption = new Option<string>(
             aliases: ["--phone-number", "-p"],
@@ -42,7 +42,7 @@ public static class CategoryActivity
                                 "application/json");
 
                         using var response = await httpClient.PostAsync(
-                            "report/category-activity",
+                            "report/activity",
                             jsonContent);
 
                         response.EnsureSuccessStatusCode();

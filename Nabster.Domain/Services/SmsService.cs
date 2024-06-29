@@ -19,6 +19,9 @@ public class SmsService
 
     public void Send(string phoneNumbers, string message)
     {
+        if (message.Length > 160)
+            message = string.Concat(message.AsSpan(0, 157), "...");
+
         foreach (var phoneNumber in phoneNumbers.Split(','))
         {
             MessageResource.Create(

@@ -8,13 +8,32 @@
             "processId": "${command:azureFunctions.pickProcess}"
         },
         {
-            "name": "Local:CategoryActivity",
+            "name": "Local:Activity",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "category-activity",
+                "activity",
+                "--category-name",
+                "<SET THIS>",
+                "--phone-number",
+                "<SET THIS>",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Local:Funded",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "funded",
                 "--category-name",
                 "<SET THIS>",
                 "--phone-number",
@@ -78,13 +97,30 @@
             "console": "internalConsole"
         },
         {
-            "name": "Azure:CategoryActivity",
+            "name": "Azure:Activity",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "category-activity",
+                "activity",
+                "--category-name",
+                "<SET THIS>",
+                "--phone-number",
+                "<SET THIS>",
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Azure:Funded",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "funded",
                 "--category-name",
                 "<SET THIS>",
                 "--phone-number",

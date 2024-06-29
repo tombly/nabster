@@ -14,27 +14,11 @@ public class Activity(CalculateService _calculateService, YnabApiClient _ynabCli
     public async Task<ActivityReport> Generate(string? budgetName, string categoryOrGroupName)
     {
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
-
-        // See if the name term matches a category exactly.
-        var category = budgetDetail.Categories!.FirstOrDefault(c => c.Name.Equals(categoryOrGroupName, StringComparison.InvariantCultureIgnoreCase));
-        if (category != null)
+        var (category, categoryGroup) = budgetDetail.FindCategoryOrGroup(categoryOrGroupName);
+        if(category != null)
             return await CreateCategoryReport(budgetDetail.Id.ToString(), category.Id.ToString());
-
-        // See if the name matches a category group exactly.
-        var categoryGroup = budgetDetail.Category_groups!.FirstOrDefault(g => g.Name.Equals(categoryOrGroupName, StringComparison.InvariantCultureIgnoreCase));
-        if (categoryGroup != null)
+        if(categoryGroup != null)
             return await CreateCategoryGroupReport(budgetDetail, categoryGroup.Id);
-
-        // See if the name matches a category partially.
-        category = budgetDetail.Categories!.FirstOrDefault(c => c.Name.Contains(categoryOrGroupName, StringComparison.InvariantCultureIgnoreCase));
-        if (category != null)
-            return await CreateCategoryReport(budgetDetail.Id.ToString(), category.Id.ToString());
-
-        // See if the name matches a category group partially.
-        categoryGroup = budgetDetail.Category_groups!.FirstOrDefault(g => g.Name.Contains(categoryOrGroupName, StringComparison.InvariantCultureIgnoreCase));
-        if (categoryGroup != null)
-            return await CreateCategoryGroupReport(budgetDetail, categoryGroup.Id);
-
         throw new CategoryOrGroupNotFoundException(categoryOrGroupName);
     }
 
@@ -53,9 +37,10 @@ public class Activity(CalculateService _calculateService, YnabApiClient _ynabCli
     {
         var categories = await _ynabClient.GetCategoriesAsync(budgetDetail.Id.ToString(), null);
         var group = categories.Data.Category_groups.Single(g => g.Id == categoryGroupId);
+        var groupCategories = group.Categories.Where(c => !c.Hidden && !c.Deleted).ToList();
 
-        var activity = group.Categories.Sum(c => c.Activity);
-        var need = group.Categories.Sum(c => _calculateService.MonthlyNeed(c));
+        var activity = groupCategories.Sum(c => c.Activity);
+        var need = groupCategories.Sum(c => _calculateService.MonthlyNeed(c));
 
         return new ActivityReport
         {

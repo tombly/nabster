@@ -9,7 +9,8 @@ public static class Program
         var rootCommand = new RootCommand("nabster is a tool for generating YNAB reports.");
 
         rootCommand.AddGlobalOption(ConfigFileOption.Value);
-        rootCommand.AddCategoryActivity();
+        rootCommand.AddActivity();
+        rootCommand.AddFunded();
         rootCommand.AddPerformance();
         rootCommand.AddPlanning();
         rootCommand.AddSpend();

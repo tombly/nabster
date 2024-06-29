@@ -4,17 +4,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Nabster.Domain.Exceptions;
+using Nabster.Domain.Reports;
 using Nabster.Functions.Extensions;
+using Nabster.Domain.Services;
 
 namespace Nabster.Functions;
 
 public class ReportEngine(
-    ILogger<ReportEngine> _logger,
-    Domain.Reports.Activity _activity,
-    Domain.Reports.Performance _performance,
-    Domain.Reports.Planning _planning,
-    Domain.Reports.Spend _spend,
-    Domain.Notifications.ActivityToSms _categoryActivityToSms)
+                ILogger<ReportEngine> _logger,
+                Performance _performance,
+                Planning _planning,
+                Spend _spend,
+                MessagingService _messagingService)
 {
     [Function("ReportEngine")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "report/{reportName}")] HttpRequest req, string reportName, FunctionContext _)
@@ -27,6 +28,7 @@ public class ReportEngine(
             return reportName switch
             {
                 "activity" => await Activity(request),
+                "funded" => await Funded(request),
                 "performance" => await Performance(request),
                 "planning" => await Planning(request),
                 "spend" => await Spend(request),
@@ -58,8 +60,18 @@ public class ReportEngine(
         var categoryOrGroupName = request.GetRequiredStringValue("category");
         var phoneNumbers = request.GetRequiredStringValue("phone");
 
-        var report = await _activity.Generate(budgetName, categoryOrGroupName);
-        _categoryActivityToSms.Notify(categoryOrGroupName, phoneNumbers, report);
+        await _messagingService.ReplyActivity(budgetName, categoryOrGroupName, phoneNumbers);
+
+        return new OkResult();
+    }
+
+    private async Task<IActionResult> Funded(JsonNode request)
+    {
+        var budgetName = request.GetOptionalStringValue("budget");
+        var categoryOrGroupName = request.GetRequiredStringValue("category");
+        var phoneNumbers = request.GetRequiredStringValue("phone");
+
+        await _messagingService.ReplyFunded(budgetName, categoryOrGroupName, phoneNumbers);
 
         return new OkResult();
     }
