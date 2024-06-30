@@ -310,7 +310,7 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
           }
           type: 'Http'
           inputs: {
-            uri: 'https://${functionAppName}.azurewebsites.net/api/report/category-activity'
+            uri: 'https://${functionAppName}.azurewebsites.net/api/report/activity'
             method: 'POST'
             headers: {
               'x-functions-key': '@{body(\'Get_secret\')?[\'value\']}'
