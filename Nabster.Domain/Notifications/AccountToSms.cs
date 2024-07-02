@@ -9,9 +9,13 @@ public class AccountToSms(SmsService _smsService)
     public void Notify(AccountReport report, string phoneNumbers)
     {
         var message = new StringBuilder();
+        
         foreach(var balance in report.Balances)
             message.AppendLine($"{balance.Name}: {balance.Balance:c0}");
-        message.AppendLine($"Total: {report.Balances.Sum(b => b.Balance):c0}");
+        
+        if(report.Balances.Count > 1)
+            message.AppendLine($"Total: {report.Balances.Sum(b => b.Balance):c0}");
+        
         _smsService.Send(phoneNumbers, message.ToString());
     }
 }

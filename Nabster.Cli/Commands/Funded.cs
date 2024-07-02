@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Spectre.Console;
 
-namespace Nabster.Cli;
+namespace Nabster.Cli.Commands;
 
 public static class Funded
 {

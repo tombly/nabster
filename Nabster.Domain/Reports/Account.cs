@@ -25,7 +25,7 @@ public class Account(YnabApiClient _ynabClient)
             Balances = matchingAccounts.Select(a => new AccountBalance
             {
                 Name = a.Name,
-                Balance = a.Balance
+                Balance = a.Balance / 1000m
             }).ToList()
         };
 
