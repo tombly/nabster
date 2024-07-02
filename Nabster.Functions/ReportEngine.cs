@@ -27,6 +27,7 @@ public class ReportEngine(
             var request = await req.AsJsonNode();
             return reportName switch
             {
+                "account" => await Account(request),
                 "activity" => await Activity(request),
                 "funded" => await Funded(request),
                 "performance" => await Performance(request),
@@ -35,11 +36,7 @@ public class ReportEngine(
                 _ => new BadRequestObjectResult($"Invalid report name '{reportName}'"),
             };
         }
-        catch (MissingArgumentException exception)
-        {
-            return new BadRequestObjectResult(exception.Message);
-        }
-        catch (CategoryOrGroupNotFoundException exception)
+        catch (AccountNotFoundException exception)
         {
             return new NotFoundObjectResult(exception.Message);
         }
@@ -47,11 +44,30 @@ public class ReportEngine(
         {
             return new NotFoundObjectResult(exception.Message);
         }
+        catch (CategoryOrGroupNotFoundException exception)
+        {
+            return new NotFoundObjectResult(exception.Message);
+        }
+        catch (MissingArgumentException exception)
+        {
+            return new BadRequestObjectResult(exception.Message);
+        }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Error processing report request");
             return new StatusCodeResult(500);
         }
+    }
+
+    private async Task<IActionResult> Account(JsonNode request)
+    {
+        var budgetName = request.GetOptionalStringValue("budget");
+        var accountName = request.GetRequiredStringValue("account");
+        var phoneNumbers = request.GetRequiredStringValue("phone");
+
+        await _messagingService.ReplyAccount(budgetName, accountName, phoneNumbers);
+
+        return new OkResult();
     }
 
     private async Task<IActionResult> Activity(JsonNode request)

@@ -12,11 +12,13 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.AddTransient<Reports.Account>();
         services.AddTransient<Reports.Activity>();
         services.AddTransient<Reports.Funded>();
         services.AddTransient<Reports.Performance>();
         services.AddTransient<Reports.Planning>();
         services.AddTransient<Reports.Spend>();
+        services.AddTransient<AccountToSms>();
         services.AddTransient<ActivityToSms>();
         services.AddTransient<FundedToSms>();
         services.AddTransient<MessageToSms>();
