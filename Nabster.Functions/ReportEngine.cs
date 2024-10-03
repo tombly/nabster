@@ -22,7 +22,7 @@ public class ReportEngine(
     {
         try
         {
-            _logger.LogInformation("Report request received: {reportName}", reportName);
+            _logger.LogInformation("Report request received");
 
             var request = await req.AsJsonNode();
             return reportName switch
@@ -95,11 +95,13 @@ public class ReportEngine(
     private async Task<IActionResult> Performance(JsonNode request)
     {
         var budgetName = request.GetOptionalStringValue("budget");
-        var groups = request.GetRequiredStringListValue("groups");
 
-        var report = await _performance.Generate(budgetName, groups);
+        var report = await _performance.Generate(budgetName);
+ 
+        //var file = Domain.Exports.PerformanceToExcel.Create(report);
+        //return new FileContentResult(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
         var file = Domain.Exports.PerformanceToHtml.Create(report);
-
         return new FileContentResult(file, "application/html");
     }
 

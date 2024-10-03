@@ -15,22 +15,16 @@ public static class Performance
             aliases: ["--budget-name", "-b"],
             description: "The name of the budget to generate the report for.");
 
-        var filePathOption = new Option<string>(
-            aliases: ["--file-path", "-f"],
-            description: "A file that lists the account groups.");
-
         command.AddOption(budgetNameOption);
-        command.AddOption(filePathOption);
 
-        command.SetHandler(async (budgetName, filePath, configFile, httpClient) =>
+        command.SetHandler(async (budgetName, configFile, httpClient) =>
             {
                 await AnsiConsole.Status().StartAsync("Generating", async ctx =>
                     {
                         using StringContent jsonContent = new(
                                 JsonSerializer.Serialize(new
                                 {
-                                    budget = budgetName,
-                                    groups = File.ReadAllLines(filePath)
+                                    budget = budgetName
                                 }),
                                 Encoding.UTF8,
                                 "application/json");
@@ -51,6 +45,13 @@ public static class Performance
                             using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                             await stream.WriteAsync(file);
                         }
+                        else if (contentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        {
+                            var fileName = $"{budgetName} Performance {DateTime.Now:yyyyMMdd}.xlsx";
+                            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+                            using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                            await stream.WriteAsync(file);
+                        }
                         else
                         {
                             throw new InvalidOperationException($"Unexpected content type: {contentType}");
@@ -58,7 +59,6 @@ public static class Performance
                     });
             },
             budgetNameOption,
-            filePathOption,
             ConfigFileOption.Value,
             new FunctionHttpClientBinder());
 

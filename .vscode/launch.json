@@ -72,8 +72,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "performance",
-                "--file-path",
-                "${workspaceFolder}/AccountGroups.csv",
                 "--config-file",
                 "config.local.json"
             ],
@@ -174,8 +172,6 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "performance",
-                "--file-path",
-                "${workspaceFolder}/AccountGroups.csv"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,

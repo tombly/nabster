@@ -27,8 +27,8 @@ public static class PerformanceToExcel
         headerRow.ApplyStyle(workbook.CreateCellStyle().AddFontStyle(workbook, true));
 
         foreach (var accountGroup in accountGroups)
-            foreach (var transaction in accountGroup.Transactions)
-                CreateRow(sheet, rowCount++, accountGroup.Name, transaction.Date, transaction.CumulativeAmount);
+            foreach (var transaction in accountGroup.AllTransactions)
+                CreateRow(sheet, rowCount++, accountGroup.Name, transaction.Date, transaction.RunningBalance);
 
         var columnCount = 0;
         var columnEnumerator = sheet.GetEnumerator();
