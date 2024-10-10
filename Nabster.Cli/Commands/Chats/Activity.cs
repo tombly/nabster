@@ -1,13 +1,14 @@
 using System.CommandLine;
 using System.Text;
 using System.Text.Json;
+using Nabster.Cli.Binders;
 using Spectre.Console;
 
-namespace Nabster.Cli.Commands;
+namespace Nabster.Cli.Commands.Chats;
 
 public static class Activity
 {
-    public static void AddActivity(this RootCommand rootCommand)
+    public static void AddActivity(this Command parentCommand)
     {
         var command = new Command("activity", "Send an SMS with a category or group's current activity.");
 
@@ -54,6 +55,6 @@ public static class Activity
             ConfigFileOption.Value,
             new FunctionHttpClientBinder());
 
-        rootCommand.AddCommand(command);
+        parentCommand.AddCommand(command);
     }
 }

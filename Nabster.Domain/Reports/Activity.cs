@@ -9,7 +9,7 @@ namespace Nabster.Domain.Reports;
 /// Generates a simple report that shows the activity and amount needed for the
 /// current month for either a specific category or a category group.
 /// </summary>
-public class Activity(CalculateService _calculateService, YnabApiClient _ynabClient)
+public class Activity(YnabApiClient _ynabClient)
 {
     public async Task<ActivityReport> Generate(string? budgetName, string categoryOrGroupName)
     {
@@ -29,7 +29,7 @@ public class Activity(CalculateService _calculateService, YnabApiClient _ynabCli
         {
             Name = category.Name,
             Activity = Math.Abs(category.Activity) / 1000m,
-            Need = _calculateService.MonthlyNeed(category)
+            Need = CalculateService.MonthlyNeed(category)
         };
     }
 
@@ -40,7 +40,7 @@ public class Activity(CalculateService _calculateService, YnabApiClient _ynabCli
         var groupCategories = group.Categories.Where(c => !c.Hidden && !c.Deleted).ToList();
 
         var activity = groupCategories.Sum(c => c.Activity);
-        var need = groupCategories.Sum(c => _calculateService.MonthlyNeed(c));
+        var need = groupCategories.Sum(c => CalculateService.MonthlyNeed(c));
 
         return new ActivityReport
         {

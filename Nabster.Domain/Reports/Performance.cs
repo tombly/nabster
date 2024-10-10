@@ -8,12 +8,12 @@ namespace Nabster.Domain.Reports;
 /// includes an Excel spreadsheet with the data and a (self-contained) HTML
 /// file with charts.
 /// </summary>
-public class Performance(YnabApiClient _ynabClient)
+public static class Performance
 {
-    public async Task<PerformanceReport> Generate(string? budgetName)
+    public static async Task<PerformanceReport> Generate(string? budgetName, YnabApiClient ynabClient)
     {
-        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
-        var accounts = (await _ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
+        var budgetDetail = await ynabClient.GetBudgetDetailAsync(budgetName);
+        var accounts = (await ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
 
         // Create our list of account name prefixes that we'll group the
         // accounts by.
@@ -39,7 +39,7 @@ public class Performance(YnabApiClient _ynabClient)
         };
 
         // Get all the transactions.
-        var transactions = (await _ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
+        var transactions = (await ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
 
         // Add each transaction to the appropriate account group based on its prefix.
         foreach (var transaction in transactions)

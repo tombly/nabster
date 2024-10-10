@@ -9,11 +9,11 @@ namespace Nabster.Domain.Reports;
 /// annually, etc.) recurring goals are supported, as well as non-recurring
 /// goals.
 /// </summary>
-public class Planning(CalculateService _calculateService, YnabApiClient _ynabClient)
+public static class Planning
 {
-    public async Task<PlanningReport> Generate(string? budgetName)
+    public static async Task<PlanningReport> Generate(string? budgetName, YnabApiClient ynabClient)
     {
-        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
+        var budgetDetail = await ynabClient.GetBudgetDetailAsync(budgetName);
 
         // The categories don't have their group name property set automatically
         // (but they're returned in a separate collection) so we patch them here.
@@ -44,7 +44,7 @@ public class Planning(CalculateService _calculateService, YnabApiClient _ynabCli
                                 GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
                                 GoalTarget = c.Goal_target > 0 ? (c.Goal_target.Value / 1000m) : 0,
                                 GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
-                                MonthlyCost = _calculateService.MonthlyNeed(c)
+                                MonthlyCost = CalculateService.MonthlyNeed(c)
                             })
                             .OrderBy(c => c.CategoryName)]
                     })

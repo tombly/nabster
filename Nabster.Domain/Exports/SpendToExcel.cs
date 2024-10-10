@@ -7,23 +7,11 @@ namespace Nabster.Domain.Exports;
 
 public static class SpendToExcel
 {
-    public static byte[] CreateFile(SpendReport report)
+    public static byte[] Create(SpendReport report)
     {
         var workbook = new XSSFWorkbook();
         CreateSheet(workbook, report);
         return workbook.ToByteArray();
-    }
-
-    public static void Create(SpendReport report)
-    {
-        var fileName = $"{report.BudgetName} Spend {DateTime.Now:yyyyMMdd}.xlsx";
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-        var workbook = new XSSFWorkbook();
-
-        CreateSheet(workbook, report);
-
-        using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        workbook.Write(stream);
     }
 
     private static ISheet CreateSheet(XSSFWorkbook workbook, SpendReport report)

@@ -398,6 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 .DS_Store
-AccountGroups.csv
 
 Deployments/infra.local.bicepparam

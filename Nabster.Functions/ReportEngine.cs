@@ -4,18 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Nabster.Domain.Exceptions;
-using Nabster.Domain.Reports;
 using Nabster.Functions.Extensions;
 using Nabster.Domain.Services;
 
 namespace Nabster.Functions;
 
-public class ReportEngine(
-                ILogger<ReportEngine> _logger,
-                Performance _performance,
-                Planning _planning,
-                Spend _spend,
-                MessagingService _messagingService)
+public class ReportEngine(ILogger<ReportEngine> _logger, MessagingService _messagingService)
 {
     [Function("ReportEngine")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "report/{reportName}")] HttpRequest req, string reportName, FunctionContext _)
@@ -30,9 +24,6 @@ public class ReportEngine(
                 "account" => await Account(request),
                 "activity" => await Activity(request),
                 "funded" => await Funded(request),
-                "performance" => await Performance(request),
-                "planning" => await Planning(request),
-                "spend" => await Spend(request),
                 _ => new BadRequestObjectResult($"Invalid report name '{reportName}'"),
             };
         }
@@ -90,40 +81,5 @@ public class ReportEngine(
         await _messagingService.ReplyFunded(budgetName, categoryOrGroupName, phoneNumbers);
 
         return new OkResult();
-    }
-
-    private async Task<IActionResult> Performance(JsonNode request)
-    {
-        var budgetName = request.GetOptionalStringValue("budget");
-
-        var report = await _performance.Generate(budgetName);
- 
-        //var file = Domain.Exports.PerformanceToExcel.Create(report);
-        //return new FileContentResult(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
-        var file = Domain.Exports.PerformanceToHtml.Create(report);
-        return new FileContentResult(file, "application/html");
-    }
-
-    private async Task<IActionResult> Planning(JsonNode request)
-    {
-        var budgetName = request.GetOptionalStringValue("budget");
-
-        var report = await _planning.Generate(budgetName);
-        var file = Domain.Exports.PlanningToExcel.Create(report);
-
-        return new FileContentResult(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    }
-
-    private async Task<IActionResult> Spend(JsonNode request)
-    {
-        var budgetName = request.GetOptionalStringValue("budget");
-        var categoryName = request.GetRequiredStringValue("category");
-        var month = request.GetRequiredStringValue("month");
-
-        var report = await _spend.Generate(budgetName, categoryName, month);
-        var file = Domain.Exports.SpendToExcel.CreateFile(report);
-
-        return new FileContentResult(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 }

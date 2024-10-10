@@ -2,6 +2,58 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Report: Performance",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "report",
+                "performance",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Report: Planning",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "report",
+                "planning",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Report: Spend",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "report",
+                "spend",
+                "--category-name",
+                "Discretionary",
+                "--month",
+                "2024-09",
+                "--config-file",
+                "config.local.json"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "Local:Functions",
             "type": "coreclr",
             "request": "attach",
@@ -14,6 +66,7 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "chat",
                 "account",
                 "--account-name",
                 "<SET THIS>",
@@ -33,6 +86,7 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "chat",
                 "activity",
                 "--category-name",
                 "<SET THIS>",
@@ -52,60 +106,12 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "chat",
                 "funded",
                 "--category-name",
                 "<SET THIS>",
                 "--phone-number",
                 "<SET THIS>",
-                "--config-file",
-                "config.local.json"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Local:Performance",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "performance",
-                "--config-file",
-                "config.local.json"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Local:Planning",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "planning",
-                "--config-file",
-                "config.local.json"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Local:Spend",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "spend",
-                "--category-name",
-                "<SET THIS>",
-                "--month",
-                "2024-06",
                 "--config-file",
                 "config.local.json"
             ],
@@ -164,48 +170,5 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         },
-        {
-            "name": "Azure:Performance",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "performance",
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Azure:Planning",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "planning"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Azure:Spend",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "spend",
-                "--category-name",
-                "<SET THIS>",
-                "--month",
-                "2024-06"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }
     ]
 }

@@ -1,33 +1,34 @@
 ﻿using System.CommandLine;
 using System.Text;
 using System.Text.Json;
+using Nabster.Cli.Binders;
 using Spectre.Console;
 
-namespace Nabster.Cli.Commands;
+namespace Nabster.Cli.Commands.Chats;
 
-public static class Account
+public static class Funded
 {
-    public static void AddAccount(this RootCommand rootCommand)
+    public static void AddFunded(this Command parentCommand)
     {
-        var command = new Command("account", "Send an SMS with an account's balance.");
+        var command = new Command("funded", "Send an SMS with a category or group's current funding.");
 
         var budgetNameOption = new Option<string>(
             aliases: ["--budget-name", "-b"],
             description: "The name of the budget to generate the report for.");
 
-        var accountNameOption = new Option<string>(
-            aliases: ["--account-name", "-c"],
-            description: "The name of the account to generate the report for.");
+        var categoryNameOption = new Option<string>(
+            aliases: ["--category-name", "-c"],
+            description: "The name of the category or group to generate the report for.");
 
         var phoneNumberOption = new Option<string>(
             aliases: ["--phone-number", "-p"],
             description: "The phone number to send the SMS to");
 
         command.AddOption(budgetNameOption);
-        command.AddOption(accountNameOption);
+        command.AddOption(categoryNameOption);
         command.AddOption(phoneNumberOption);
 
-        command.SetHandler(async (budgetName, accountName, phoneNumber, configFile, httpClient) =>
+        command.SetHandler(async (budgetName, categoryName, phoneNumber, configFile, httpClient) =>
             {
                 await AnsiConsole.Status().StartAsync("Generating", async ctx =>
                     {
@@ -35,25 +36,25 @@ public static class Account
                                 JsonSerializer.Serialize(new
                                 {
                                     budget = budgetName,
-                                    account = accountName,
+                                    category = categoryName,
                                     phone = phoneNumber
                                 }),
                                 Encoding.UTF8,
                                 "application/json");
 
                         using var response = await httpClient.PostAsync(
-                            "report/account",
+                            "report/funded",
                             jsonContent);
 
                         response.EnsureSuccessStatusCode();
                     });
             },
             budgetNameOption,
-            accountNameOption,
+            categoryNameOption,
             phoneNumberOption,
             ConfigFileOption.Value,
             new FunctionHttpClientBinder());
 
-        rootCommand.AddCommand(command);
+        parentCommand.AddCommand(command);
     }
 }

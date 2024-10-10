@@ -7,9 +7,9 @@ namespace Nabster.Domain.Reports;
 /// Generates a monthly spend report for a specific category that groups and
 /// totals transactions based on prefixes in their memo text.
 /// </summary>
-public class Spend(YnabApiClient _ynabClient)
+public static class Spend
 {
-    public async Task<SpendReport> Generate(string? budgetName, string categoryName, string month)
+    public static async Task<SpendReport> Generate(string? budgetName, string categoryName, string month, YnabApiClient _ynabClient)
     {
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 

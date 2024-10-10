@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Nabster.Domain.Notifications;
 using Nabster.Domain.Services;
@@ -15,14 +15,10 @@ public static class ServiceCollectionExtensions
         services.AddTransient<Reports.Account>();
         services.AddTransient<Reports.Activity>();
         services.AddTransient<Reports.Funded>();
-        services.AddTransient<Reports.Performance>();
-        services.AddTransient<Reports.Planning>();
-        services.AddTransient<Reports.Spend>();
         services.AddTransient<AccountToSms>();
         services.AddTransient<ActivityToSms>();
         services.AddTransient<FundedToSms>();
         services.AddTransient<MessageToSms>();
-        services.AddTransient<CalculateService>();
         services.AddTransient<MessagingService>();
         services.AddSingleton<YnabApiClient>(sp =>
         {

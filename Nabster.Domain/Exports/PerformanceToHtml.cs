@@ -117,11 +117,14 @@ public static class PerformanceToHtml
 
         AddDataSeries(plotModel, InterpolateMonthly(accountGroup.AllTransactions), "#333333", [3, 3]);
         foreach (var account in accountGroup.Accounts)
-            AddDataSeries(plotModel, InterpolateMonthly(account.Transactions), colorMap[account.Name], [0,0]);
+            AddDataSeries(plotModel, InterpolateMonthly(account.Transactions), colorMap[account.Name], [0, 0]);
 
         using var stream = new MemoryStream();
-        SvgExporter.Export(plotModel, stream, 450, 450, false);
-        return Encoding.UTF8.GetString(stream.ToArray());
+        SvgExporter.Export(plotModel, stream, 450, 450, isDocument: false);
+
+        // Note that we have to remove the UTF8 byte order mask (EFBBBF) when
+        // converting the byte array to a string.
+        return Encoding.UTF8.GetString(stream.ToArray().Skip(3).ToArray());
     }
 
     private static List<DateBalance> InterpolateMonthly(List<PerformanceTransaction> data)
@@ -129,7 +132,7 @@ public static class PerformanceToHtml
         // Sort the input data by date.
         data = [.. data.OrderBy(d => d.Date)];
 
-        if(data.Count == 0)
+        if (data.Count == 0)
             return [];
 
         // Determine the start and end dates.

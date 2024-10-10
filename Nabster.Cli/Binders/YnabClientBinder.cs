@@ -1,15 +1,17 @@
 using System.CommandLine.Binding;
+using System.Net.Http.Headers;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
+using Ynab.Api.Client;
 
-namespace Nabster.Cli;
+namespace Nabster.Cli.Binders;
 
-public class FunctionHttpClientBinder : BinderBase<HttpClient>
+public class YnabClientBinder : BinderBase<YnabApiClient>
 {
     private readonly HttpClient httpClient = new();
 
-    protected override HttpClient GetBoundValue(BindingContext bindingContext)
+    protected override YnabApiClient GetBoundValue(BindingContext bindingContext)
     {
         var configFileName = bindingContext.ParseResult.GetValueForOption(ConfigFileOption.Value);
         var builder = new ConfigurationBuilder()
@@ -18,14 +20,12 @@ public class FunctionHttpClientBinder : BinderBase<HttpClient>
         var config = builder.Build();
 
         var keyVaultUrl = config["KeyVaultUrl"] ?? throw new InvalidOperationException("KeyVaultUrl not found in config file.");
-        var functionAppUrl = config["FunctionAppUrl"] ?? throw new InvalidOperationException("FunctionAppUrl not found in config file.");
 
         var client = new SecretClient(vaultUri: new Uri(keyVaultUrl), credential: new DefaultAzureCredential());
-        var secret = client.GetSecret("FunctionAppKey");
+        var ynabAccessToken = client.GetSecret("YnabAccessToken");
 
-        httpClient.BaseAddress = new Uri(functionAppUrl);
-        httpClient.DefaultRequestHeaders.Add("x-functions-key", secret.Value.Value);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ynabAccessToken.Value.Value);
 
-        return httpClient;
+        return new YnabApiClient(httpClient);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Nabster.Domain.Services;
 
-public class CalculateService
+public static class CalculateService
 {
     /// <summary>
     /// Figures out what the monthly need of a category is (shown as "Needed This
@@ -11,7 +11,7 @@ public class CalculateService
     /// on the remaining amount to reach the target. For non-recurring goals it
     /// simply divides the remaining amount by the remaining months.
     /// </summary>
-    public decimal MonthlyNeed(Category category)
+    public static decimal MonthlyNeed(Category category)
     {
         var multiplier = default(decimal?);
         switch (category.Goal_cadence)
