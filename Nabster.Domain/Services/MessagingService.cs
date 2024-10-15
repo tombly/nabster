@@ -1,43 +1,38 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Nabster.Domain.Reports;
 
 namespace Nabster.Domain.Services;
 
 public class MessagingService(Account _account, Activity _activity, Funded _funded, SmsService _smsService)
 {
-    public async Task ReplyToMessage(string message, string phoneNumber)
+    public async Task ReplyToMessage(string message, string phoneNumber, ILogger logger)
     {
+        logger.LogInformation("Received message from {phoneNumber}: {message}", phoneNumber, message);
+
         try
         {
             var command = message.Split(' ')[0].ToLowerInvariant();
-            var parameter = message[(message.IndexOf(' ') + 1)..].Trim().ToLowerInvariant();
-
-            switch (command)
+            var argument = message[(message.IndexOf(' ') + 1)..].Trim().ToLowerInvariant();
+            var response = command switch
             {
-                case "account":
-                    await ReplyAccount(null, parameter, phoneNumber);
-                    break;
-                case "activity":
-                    await ReplyActivity(null, parameter, phoneNumber);
-                    break;
-                case "funded":
-                    await ReplyFunded(null, parameter, phoneNumber);
-                    break;
-                case "commands":
-                    ReplyHelp(phoneNumber);
-                    break;
-                default:
-                    ReplyMessage($"Unrecognized command {command}", phoneNumber);
-                    break;
-            }
+                "account" => await ReplyAccount(null, argument),
+                "activity" => await ReplyActivity(null, argument),
+                "funded" => await ReplyFunded(null, argument),
+                "commands" => ReplyHelp(),
+                _ => $"Unrecognized command {command}",
+            };
+            logger.LogInformation("Replied to message {message} with {response}", message, response);
+            _smsService.Send(phoneNumber, response);
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
-            ReplyMessage(exception.Message, phoneNumber);
+            logger.LogError(exception, "Error processing message {message}", message);
+            _smsService.Send("Hm, that didn't work", phoneNumber);
         }
     }
 
-    public async Task ReplyAccount(string? budgetName, string accountName, string phoneNumbers)
+    public async Task<string> ReplyAccount(string? budgetName, string accountName)
     {
         var report = await _account.Generate(budgetName, accountName);
 
@@ -49,22 +44,21 @@ public class MessagingService(Account _account, Activity _activity, Funded _fund
         if (report.Balances.Count > 1)
             message.AppendLine($"Total: {report.Balances.Sum(b => b.Balance):c0}");
 
-        _smsService.Send(phoneNumbers, message.ToString());
+        return message.ToString();
     }
 
-    public async Task ReplyActivity(string? budgetName, string categoryOrGroupName, string phoneNumbers)
+    public async Task<string> ReplyActivity(string? budgetName, string categoryOrGroupName)
     {
         var report = await _activity.Generate(budgetName, categoryOrGroupName);
-        var message = $"{report.Name} activity: {report.Activity:c0} of {report.Need:c0} ({report.Activity / report.Need:p0})";
-        _smsService.Send(phoneNumbers, message);
+        return $"{report.Name} activity: {report.Activity:c0} of {report.Need:c0} ({report.Activity / report.Need:p0})";
     }
 
-    public async Task ReplyFunded(string? budgetName, string categoryOrGroupName, string phoneNumbers)
+    public async Task<string> ReplyFunded(string? budgetName, string categoryOrGroupName)
     {
         var report = await _funded.Generate(budgetName, categoryOrGroupName);
-        _smsService.Send(phoneNumbers, report.Categories.Count == 1 ?
-                                  BuildMessageForCategory(report) :
-                                  BuildMessageForCategories(report));
+        return report.Categories.Count == 1 ?
+                                    BuildMessageForCategory(report) :
+                                    BuildMessageForCategories(report);
     }
 
     private static string BuildMessageForCategory(FundedReport report)
@@ -88,17 +82,11 @@ public class MessagingService(Account _account, Activity _activity, Funded _fund
         return message.ToString();
     }
 
-    public void ReplyHelp(string phoneNumbers)
+    public static string ReplyHelp()
     {
-        var message = "Commands:\n" +
-                      "account <name>\n" +
-                      "activity <category or group name>\n" +
-                      "funded <category or group name>\n";
-        _smsService.Send(phoneNumbers, message);
-    }
-
-    public void ReplyMessage(string message, string phoneNumber)
-    {
-        _smsService.Send(phoneNumber, message);
+        return "Commands:\n" +
+               "account <name>\n" +
+               "activity <category or group name>\n" +
+               "funded <category or group name>\n";
     }
 }

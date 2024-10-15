@@ -20,7 +20,7 @@ public class IncomingSms(ILogger<IncomingSms> _logger, Domain.Services.Messaging
         var body = content["Body"].ToString();
         var from = content["From"].ToString();
 
-        await _messagingService.ReplyToMessage(body, from);
+        await _messagingService.ReplyToMessage(body, from, _logger);
 
         return new NoContentResult();
     }

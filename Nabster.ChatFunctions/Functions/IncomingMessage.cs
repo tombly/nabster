@@ -18,7 +18,7 @@ public class IncomingMessage(ILogger<IncomingMessage> _logger, MessagingService 
         var body = json.GetRequiredStringValue("body");
         var from = json.GetRequiredStringValue("from");
 
-        await _messagingService.ReplyToMessage(body, from);
+        await _messagingService.ReplyToMessage(body, from, _logger);
 
         return new NoContentResult();
     }
