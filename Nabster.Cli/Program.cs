@@ -7,11 +7,13 @@ public static class Program
 {
     static async Task<int> Main(string[] args)
     {
-        var rootCommand = new RootCommand("Nabster is a tool for generating YNAB reports.");
+        var rootCommand = new RootCommand("Nabster is a tool for YNAB reporting.");
 
         rootCommand.AddGlobalOption(ConfigFileOption.Value);
         rootCommand.AddChat();
-        rootCommand.AddReport();
+        rootCommand.AddPerformance();
+        rootCommand.AddPlanning();
+        rootCommand.AddSpend();
 
         return await rootCommand.InvokeAsync(args);
     }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Domain", "Nabster.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Cli", "Nabster.Cli\Nabster.Cli.csproj", "{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Functions", "Nabster.Functions\Nabster.Functions.csproj", "{B465C956-6676-4CA6-836A-CE599D16F562}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.ChatFunctions", "Nabster.ChatFunctions\Nabster.ChatFunctions.csproj", "{B465C956-6676-4CA6-836A-CE599D16F562}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

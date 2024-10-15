@@ -8,7 +8,6 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "report",
                 "performance",
                 "--config-file",
                 "config.local.json"
@@ -24,7 +23,6 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "report",
                 "planning",
                 "--config-file",
                 "config.local.json"
@@ -40,10 +38,9 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
-                "report",
                 "spend",
                 "--category-name",
-                "Discretionary",
+                "<CATEGORY NAME>",
                 "--month",
                 "2024-09",
                 "--config-file",
@@ -54,24 +51,23 @@
             "console": "internalConsole"
         },
         {
-            "name": "Local:Functions",
+            "name": "Local:Chat Functions",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
         },
         {
-            "name": "Local:Account",
+            "name": "Local:Chat",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "chat",
-                "account",
-                "--account-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>",
+                "--body",
+                "<MESSAGE>",
+                "--from",
+                "<PHONE NUMBER>",
                 "--config-file",
                 "config.local.json"
             ],
@@ -80,95 +76,21 @@
             "console": "internalConsole"
         },
         {
-            "name": "Local:Activity",
+            "name": "Azure:Chat",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "chat",
-                "activity",
-                "--category-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>",
-                "--config-file",
-                "config.local.json"
+                "--body",
+                "<MESSAGE>",
+                "--from",
+                "<PHONE NUMBER>",
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
             "console": "internalConsole"
-        },
-        {
-            "name": "Local:Funded",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "chat",
-                "funded",
-                "--category-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>",
-                "--config-file",
-                "config.local.json"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Azure:Account",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "account",
-                "--account-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>",
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Azure:Activity",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "activity",
-                "--category-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>",
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Azure:Funded",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
-            "args": [
-                "funded",
-                "--category-name",
-                "<SET THIS>",
-                "--phone-number",
-                "<SET THIS>"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
+        }
     ]
 }

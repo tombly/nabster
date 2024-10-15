@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Nabster.Domain.Exceptions;
 
-namespace Nabster.Functions.Extensions;
+namespace Nabster.ChatFunctions.Extensions;
 
 public static class JsonNodeExtensions
 {

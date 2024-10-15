@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
-using Nabster.Domain.Notifications;
 using Nabster.Domain.Services;
 using Ynab.Api.Client;
 
@@ -15,11 +14,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<Reports.Account>();
         services.AddTransient<Reports.Activity>();
         services.AddTransient<Reports.Funded>();
-        services.AddTransient<AccountToSms>();
-        services.AddTransient<ActivityToSms>();
-        services.AddTransient<FundedToSms>();
-        services.AddTransient<MessageToSms>();
         services.AddTransient<MessagingService>();
+        services.AddTransient<SmsService>();
         services.AddSingleton<YnabApiClient>(sp =>
         {
             var ynabAccessToken = Environment.GetEnvironmentVariable("YNAB_ACCESS_TOKEN") ?? throw new Exception("YNAB_ACCESS_TOKEN not set");
@@ -30,7 +26,6 @@ public static class ServiceCollectionExtensions
                 }
             });
         });
-        services.AddSingleton<SmsService>();
 
         return services;
     }

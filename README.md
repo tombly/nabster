@@ -47,8 +47,8 @@ Edit the `Deployments/infra.bicepparam` file to add your YNAB personal access to
 
 ```shell
 cd Deployments
-./deploy_infra.sh mynabster infra.bicepparam
-./deploy_code.sh mynabster
+./deploy-infra.sh mynabster infra.bicepparam
+./deploy-code.sh mynabster
 ```
 
 The function app can also be run locally and supports debugging with breakpoints.

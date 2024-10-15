@@ -2,7 +2,7 @@ using System.CommandLine;
 using Nabster.Cli.Binders;
 using Spectre.Console;
 
-namespace Nabster.Cli.Commands.Reports;
+namespace Nabster.Cli.Commands;
 
 public static class Planning
 {
