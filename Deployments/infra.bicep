@@ -31,11 +31,11 @@ param twilioPhoneNumber string
 @description('The (optional) budget name to send to the function (used by logic app).')
 param budget string = ''
 
-@description('The category name to send to the function (used by logic app).')
-param category string
+@description('The message to send to the function (used by logic app).')
+param message string
 
 @description('The phone number to send to the function (used by logic app).')
-param phone string
+param toPhone string
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionAppName
@@ -317,8 +317,8 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
             }
             body: {
               budget: budget
-              category: category
-              phone: phone
+              body: message
+              from: toPhone
             }
           }
           runtimeConfiguration: {
