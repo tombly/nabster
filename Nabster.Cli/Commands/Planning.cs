@@ -14,24 +14,39 @@ public static class Planning
             aliases: ["--budget-name", "-b"],
             description: "The name of the budget to generate the report for.");
 
-        command.AddOption(budgetNameOption);
+        var outputFormatOption = new Option<string>(
+            aliases: ["--output-format", "-o"],
+            description: "The output file type, xlsx or html (default).");
 
-        command.SetHandler(async (budgetName, configFile, ynabClient) =>
+        command.AddOption(budgetNameOption);
+        command.AddOption(outputFormatOption);
+
+        command.SetHandler(async (budgetName, outputFormat, configFile, ynabClient) =>
             {
                 await AnsiConsole.Status().StartAsync("Generating", async ctx =>
                     {
                         var report = await Domain.Reports.Planning.Generate(budgetName, ynabClient);
 
-                        var fileBytes = Domain.Exports.PlanningToExcel.Create(report);
-                        var fileExtension = "xlsx";
-
+                        byte[] fileBytes;
+                        string fileExtension;
+                        switch (outputFormat)
+                        {
+                            case "xlsx":
+                                fileBytes = Domain.Exports.PlanningToExcel.Create(report);
+                                fileExtension = "xlsx";
+                                break;
+                            default:
+                                fileBytes = Domain.Exports.PlanningToHtml.Create(report);
+                                fileExtension = "html";
+                                break;
+                        }
                         var fileName = $"{budgetName} Planning {DateTime.Now:yyyyMMdd}.{fileExtension}";
                         var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
                         using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                         await stream.WriteAsync(fileBytes);
                     });
             },
-            budgetNameOption, ConfigFileOption.Value, new YnabClientBinder());
+            budgetNameOption, outputFormatOption, ConfigFileOption.Value, new YnabClientBinder());
 
         parentCommand.AddCommand(command);
     }
