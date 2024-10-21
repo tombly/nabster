@@ -20,7 +20,7 @@ public static class SpendToExcel
         var rowCount = 0;
 
         CreateTitleRow(sheet, rowCount++, $"Spend Report - {report.BudgetName} - {report.MonthName}");
-        foreach (var group in report.Groups)
+        foreach (var group in report.Groups.OrderBy(g => g.MemoPrefix))
         {
             CreateGroupTitleRow(sheet, rowCount++, group.MemoPrefix);
             foreach (var transaction in group.Transactions)

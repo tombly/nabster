@@ -14,7 +14,7 @@ public static class Spend
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
 
         // Get all the transactions for the current month for the given category.
-        var categoryId = budgetDetail.Categories!.FirstOrDefault(c => c.Name == categoryName)?.Id;
+        var categoryId = budgetDetail.Categories!.FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.InvariantCultureIgnoreCase))?.Id;
         var startOfMonth = new DateTimeOffset(DateTime.Parse(month).Year, DateTime.Parse(month).Month, 1, 0, 0, 0, TimeSpan.Zero);
         var transactions = (await _ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), startOfMonth, null, null)).Data.Transactions;
 
@@ -36,7 +36,7 @@ public static class Spend
                 MemoPrefix = g.Key,
                 Transactions = g.Select(t => new SpendTransaction
                 {
-                    Description = t.Payee_name + " " + t.Memo,
+                    Description = BuildDescription(g.Key, t),
                     Date = t.Date,
                     Amount = t.Amount / 1000m
                 }).ToList()
@@ -44,6 +44,23 @@ public static class Spend
         };
 
         return model;
+    }
+
+    private static string BuildDescription(string memoPrefix, TransactionDetail transaction)
+    {
+        var payee = CleanPayee(transaction.Payee_name!);
+        var memo = transaction.Memo!.Replace(memoPrefix + ":", string.Empty);
+        return string.IsNullOrWhiteSpace(memo) ? payee : $"{payee} - {memo}";
+    }
+
+    private static string CleanPayee(string payee)
+    {
+        if(payee.Contains("amazon", StringComparison.InvariantCultureIgnoreCase)) return "Amazon";
+        if(payee.Contains("kindle", StringComparison.InvariantCultureIgnoreCase)) return "Kindle";
+        if(payee.Contains("microsoft", StringComparison.InvariantCultureIgnoreCase)) return "Microsoft";
+        if(payee.Contains("nintendo", StringComparison.InvariantCultureIgnoreCase)) return "Nintendo";
+        if(payee.Contains("apple", StringComparison.InvariantCultureIgnoreCase)) return "Apple";
+        return payee;
     }
 }
 

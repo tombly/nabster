@@ -10,6 +10,24 @@ public static class PlanningToHtml
         var html = new StringBuilder();
         html.AppendLine($"<html><body style=\"font-family: monospace;\">");
 
+        CreateStyle(html);
+        CreateHeaderRow(html);
+        foreach (var group in report.Groups)
+        {
+            CreateGroupTitleRow(html, group.CategoryGroupName);
+            foreach (var category in group.Categories)
+                CreateCategoryRow(html, category);
+            CreateGroupTotalRow(html, group.MonthlyTotal, group.YearlyTotal);
+        }
+        CreateReportTotalRow(html, report.MonthlyTotal, report.YearlyTotal);
+
+        html.AppendLine($"</body></html>");
+
+        return Encoding.UTF8.GetBytes(html.ToString());
+    }
+
+    private static void CreateStyle(StringBuilder html)
+    {
         html.AppendLine(@"
             <style>
                 .flex-row {
@@ -30,20 +48,6 @@ public static class PlanningToHtml
                     border: none;
                 }
             </style>");
-
-        CreateHeaderRow(html);
-        foreach (var group in report.Groups)
-        {
-            CreateGroupTitleRow(html, group.CategoryGroupName);
-            foreach (var category in group.Categories)
-                CreateCategoryRow(html, category);
-            CreateGroupTotalRow(html, group.MonthlyTotal, group.YearlyTotal);
-        }
-        CreateReportTotalRow(html, report.MonthlyTotal, report.YearlyTotal);
-
-        html.AppendLine($"</body></html>");
-
-        return Encoding.UTF8.GetBytes(html.ToString());
     }
 
     private static void CreateHeaderRow(StringBuilder html)
