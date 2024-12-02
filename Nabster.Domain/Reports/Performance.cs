@@ -13,7 +13,7 @@ public static class Performance
     public static async Task<PerformanceReport> Generate(string? budgetName, YnabApiClient ynabClient)
     {
         var budgetDetail = await ynabClient.GetBudgetDetailAsync(budgetName);
-        var accounts = (await ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
+        var accounts = (await ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts;
 
         // Create our list of account name prefixes that we'll group the
         // accounts by.
@@ -41,56 +41,79 @@ public static class Performance
         // Get all the transactions.
         var transactions = (await ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
 
-        // Add each transaction to the appropriate account group based on its prefix.
-        foreach (var transaction in transactions)
+        foreach (var account in accounts)
         {
-            if (!accountNames.Contains(transaction.Account_name))
-                continue;
+            var accountPrefix = account.Name.Split(' ').First();
+            var accountGroupModel = model.AccountGroups.First(g => g.Prefix == accountPrefix);
+            var accountModel = accountGroupModel.Accounts.First(a => account.Name == a.Name);
 
-            var transactionAccountPrefix = transaction.Account_name.Split(' ').First();
-            var accountGroup = model.AccountGroups.First(g => g.Prefix == transactionAccountPrefix);
-            var account = accountGroup.Accounts.First(a => transaction.Account_name == a.Name);
+            var cumulative = 0m;
+            foreach (var transaction in transactions.Where(t => t.Account_name == account.Name).OrderBy(t => t.Date))
+            {
+                var date = transaction.Date;
+                var amount = transaction.Amount / 1000m;
 
-            var date = transaction.Date;
-            var amount = transaction.Amount / 1000m;
+                // Account for any loan interest.
+                if (account.Debt_interest_rates!.Any() && cumulative != 0)
+                {
+                    var interestRate = LookupPeriodicValue(account.Debt_interest_rates!, date);
+                    var interest = (Math.Abs(cumulative) * (interestRate / 100m)) / 12m;
+                    amount -= interest;
+                }
 
-            account.Transactions.Add(new PerformanceTransaction { Date = date, Amount = amount });
-            accountGroup.AllTransactions.Add(new PerformanceTransaction { Date = date, Amount = amount });
+                // Account for any escrow amounts.
+                if (account.Debt_escrow_amounts!.Any() && cumulative != 0)
+                {
+                    var escrowAmount = LookupPeriodicValue(account.Debt_escrow_amounts!, date);
+                    amount -= escrowAmount;
+                }
+
+                accountModel.Transactions.Add(new PerformanceTransaction
+                {
+                    Date = date,
+                    Amount = amount,
+                    RunningBalance = cumulative + amount
+                });
+
+                cumulative += amount;
+            }
         }
 
-        // Calculate running balance.
+        // Accumulate all account transactions into the group's list.
         foreach (var accountGroup in model.AccountGroups)
         {
-            AccumulateTransactions(accountGroup.AllTransactions);
-            foreach (var account in accountGroup.Accounts)
-                AccumulateTransactions(account.Transactions);
-        }
+            var groupTransactions = accountGroup.Accounts.SelectMany(a => a.Transactions).OrderBy(t => t.Date).ToList();
 
-        // Trim the transactions to the past year (must do this after we've
-        // calculated the running balances).
-        foreach (var accountGroup in model.AccountGroups)
-        {
-            RemoveOldTransactions(accountGroup.AllTransactions);
-            foreach (var account in accountGroup.Accounts)
-                RemoveOldTransactions(account.Transactions);
+            var cumulative = 0m;
+            foreach (var transaction in groupTransactions)
+            {
+                accountGroup.AllTransactions.Add(new PerformanceTransaction
+                {
+                    Date = transaction.Date,
+                    Amount = transaction.Amount,
+                    RunningBalance = cumulative + transaction.Amount
+                });
+
+                cumulative += transaction.Amount;
+            }
         }
 
         return model;
     }
 
-    private static void AccumulateTransactions(List<PerformanceTransaction> transactions)
+    private static decimal LookupPeriodicValue(LoanAccountPeriodicValue periodicValue, DateTimeOffset date)
     {
-        var cumulative = 0m;
-        foreach (var transaction in transactions.OrderBy(t => t.Date))
-        {
-            cumulative += transaction.Amount;
-            transaction.RunningBalance = cumulative;
-        }
-    }
+        if (!periodicValue.Any())
+            throw new Exception("No periodic values");
 
-    private static void RemoveOldTransactions(List<PerformanceTransaction> transactions)
-    {
-        transactions.RemoveAll(t => t.Date < DateTime.Now.AddDays(-365 - 14));
+        var foundValue = 0m;
+        foreach (var rate in periodicValue.OrderBy(r => DateTime.Parse(r.Key)))
+        {
+            if (DateTime.Parse(rate.Key) > date)
+                break;
+            foundValue = rate.Value;
+        }
+        return foundValue / 1000m;
     }
 
     private static string NameForGroupPrefix(string prefix)

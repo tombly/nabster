@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Nabster.Domain.Reports;
 using OxyPlot;
@@ -8,26 +9,24 @@ namespace Nabster.Domain.Exports;
 
 public static class PerformanceToHtml
 {
-    private static readonly List<string> _lineColors = ["#003f5c", "#2f4b7c", "#665191", "#a05195", "#d45087", "#f95d6a", "#ff7c43", "#ffa600"];
+    private static readonly List<string> _lineColors = ["#003f5c", "#d45087", "#665191", "#a05195", "#2f4b7c", "#f95d6a", "#ff7c43", "#ffa600"];
 
     public static byte[] Create(PerformanceReport report)
     {
+        var charts = FromPerformanceReport(report);
+
         var html = new StringBuilder();
         html.AppendLine($"<html><body style=\"font-family: monospace;\">");
 
-        var colorMap = new Dictionary<string, string>();
-        foreach (var account in report.AccountGroups.SelectMany(g => g.Accounts))
-            colorMap[account.Name] = _lineColors[colorMap.Count % _lineColors.Count];
-
-        foreach (var accountGroup in report.AccountGroups.Where(g => g.AllTransactions.Any()))
+        foreach (var chart in charts)
         {
             // Find the earliest and latest transactions.
-            var firstTransaction = accountGroup.AllTransactions.OrderBy(t => t.Date).First();
-            var lastTransaction = accountGroup.AllTransactions.OrderBy(t => t.Date).Last();
+            var firstTransaction = chart.DataSeries.Single(s => s.Title == "Total").DataPoints.First();
+            var lastTransaction = chart.DataSeries.Single(s => s.Title == "Total").DataPoints.Last();
 
-            var chartSvg = CreateChart(accountGroup, colorMap);
+            var chartSvg = CreateChart(chart);
 
-            html.AppendLine($"<div style=\"font-size: x-large; margin-bottom: 8px;\">{accountGroup.Name}</div>");
+            html.AppendLine($"<div style=\"font-size: x-large; margin-bottom: 8px;\">{chart.Title}</div>");
 
             // Container for chart and details.
             html.AppendLine("<div style=\"display: flex;\">");
@@ -39,13 +38,13 @@ public static class PerformanceToHtml
 
             // Details on the right.
             html.AppendLine("<div style=\"flex: 1\">");
-            html.AppendLine($"Begin:&nbsp; {firstTransaction.RunningBalance:C0} ({firstTransaction.Date:M/yyyy})<br>");
-            html.AppendLine($"End:&nbsp;&nbsp;&nbsp; {lastTransaction.RunningBalance:C0} ({lastTransaction.Date:M/yyyy})<br>");
-            html.AppendLine($"Change: {lastTransaction.RunningBalance - firstTransaction.RunningBalance:C0}<br>");
+            html.AppendLine($"Begin:&nbsp; {firstTransaction.Balance:C0} ({firstTransaction.Date:M/yyyy})<br>");
+            html.AppendLine($"End:&nbsp;&nbsp;&nbsp; {lastTransaction.Balance:C0} ({lastTransaction.Date:M/yyyy})<br>");
+            html.AppendLine($"Change: {lastTransaction.Balance - firstTransaction.Balance:C0}<br>");
             html.AppendLine("<br>");
 
-            foreach (var accountName in accountGroup.Accounts.Select(a => a.Name))
-                html.AppendLine($"{accountName} <span style='height: 10px;  width: 10px; background-color: {colorMap[accountName]}; border-radius: 50%; display: inline-block;'></span><br>");
+            foreach (var dataSeries in chart.DataSeries)
+                html.AppendLine($"{dataSeries.Title} <span style='height: 10px;  width: 10px; background-color: {dataSeries.Color}; border-radius: 50%; display: inline-block;'></span><br>");
 
             html.AppendLine("</div>");
             html.AppendLine("</div>");
@@ -56,7 +55,58 @@ public static class PerformanceToHtml
         return Encoding.UTF8.GetBytes(html.ToString());
     }
 
-    private static string CreateChart(PerformanceAccountGroup accountGroup, Dictionary<string, string> colorMap)
+    /// <summary>
+    /// Build the chart models from the report.
+    /// </summary>
+    /// <param name="report"></param>
+    /// <returns></returns>
+    private static List<ChartData> FromPerformanceReport(PerformanceReport report)
+    {
+        // Assign a color to each account.
+        var colorMap = new Dictionary<string, string>();
+        foreach (var account in report.AccountGroups.SelectMany(g => g.Accounts))
+            colorMap[account.Name] = _lineColors[colorMap.Count % _lineColors.Count];
+
+        // Create a chart for each account group.
+        var charts = new List<ChartData>();
+        foreach (var accountGroup in report.AccountGroups)
+        {
+            var data = new ChartData
+            {
+                Title = accountGroup.Name,
+                DataSeries = [new ChartDataSeries
+                {
+                    Title = "Total",
+                    Color = "#333333",
+                    Dashes = [3, 3],
+                    DataPoints = AverageWeekly(accountGroup.AllTransactions)
+                                    .Select(t => new ChartDataPoint { Date = t.Date.Date, Balance = t.Balance })
+                                    .Where(t => t.Date > DateTime.Now.AddDays(-365))
+                                    .ToList()
+                }]
+            };
+
+            foreach (var account in accountGroup.Accounts)
+            {
+                data.DataSeries.Add(new ChartDataSeries
+                {
+                    Title = account.Name,
+                    Color = colorMap[account.Name],
+                    Dashes = [0, 0],
+                    DataPoints = AverageWeekly(account.Transactions)
+                                    .Select(t => new ChartDataPoint { Date = t.Date.Date, Balance = t.Balance })
+                                    .Where(t => t.Date > DateTime.Now.AddDays(-365))
+                                    .ToList()
+                });
+            }
+
+            charts.Add(data);
+        }
+
+        return charts;
+    }
+
+    private static string CreateChart(ChartData chart)
     {
         var xAxis = new DateTimeAxis
         {
@@ -70,8 +120,8 @@ public static class PerformanceToHtml
             FontSize = 10
         };
 
-        var minYValue = (double)accountGroup.AllTransactions.Min(t => t.RunningBalance);
-        var maxYValue = (double)accountGroup.AllTransactions.Max(t => t.RunningBalance);
+        var minYValue = (double)chart.DataSeries.Single(s => s.Title == "Total").DataPoints.Min(w => w.Balance);
+        var maxYValue = (double)chart.DataSeries.Single(s => s.Title == "Total").DataPoints.Max(w => w.Balance);
 
         double minimum;
         double maximum;
@@ -80,19 +130,19 @@ public static class PerformanceToHtml
         if (maxYValue > 0 && minYValue > 0)
         {
             minimum = 0;
-            maximum = maxYValue * 1.05;
+            maximum = RoundAmount(maxYValue);
             step = maximum / 10.0;
         }
         else if (maxYValue < 0 && minYValue < 0)
         {
-            minimum = minYValue * 1.05;
+            minimum = RoundAmount(minYValue);
             maximum = 0;
             step = Math.Abs(minimum) / 10.0;
         }
         else
         {
-            minimum = minYValue * 1.05;
-            maximum = maxYValue * 1.05;
+            RoundAmount(minimum = minYValue);
+            RoundAmount(maximum = maxYValue);
             step = maximum - minimum / 10.0;
         }
 
@@ -115,80 +165,91 @@ public static class PerformanceToHtml
         plotModel.Axes.Add(yAxis);
         plotModel.PlotMargins = new OxyThickness(75, 0, 0, 50);
 
-        AddDataSeries(plotModel, InterpolateMonthly(accountGroup.AllTransactions), "#333333", [3, 3]);
-        foreach (var account in accountGroup.Accounts)
-            AddDataSeries(plotModel, InterpolateMonthly(account.Transactions), colorMap[account.Name], [0, 0]);
+        foreach (var dataSeries in chart.DataSeries)
+            AddDataSeries(plotModel, dataSeries);
 
         using var stream = new MemoryStream();
-        SvgExporter.Export(plotModel, stream, 450, 450, isDocument: false);
+        SvgExporter.Export(plotModel, stream, 420, 420, isDocument: false);
 
         // Note that we have to remove the UTF8 byte order mask (EFBBBF) when
         // converting the byte array to a string.
         return Encoding.UTF8.GetString(stream.ToArray().Skip(3).ToArray());
     }
 
-    private static List<DateBalance> InterpolateMonthly(List<PerformanceTransaction> data)
+    private static double RoundAmount(double number)
     {
-        // Sort the input data by date.
-        data = [.. data.OrderBy(d => d.Date)];
-
-        if (data.Count == 0)
-            return [];
-
-        // Determine the start and end dates.
-        var startDate = data.First().Date;
-        var endDate = data.Last().Date;
-
-        // Generate a list of dates, one for each month between the start and end dates.
-        var interpolatedData = new List<DateBalance>();
-        var currentDate = new DateTime(startDate.Year, startDate.Month, 1);
-
-        while (currentDate <= endDate)
-        {
-            // Find the two closest dates in the input list.
-            var previousData = data.LastOrDefault(d => d.Date <= currentDate);
-            var nextData = data.FirstOrDefault(d => d.Date > currentDate);
-
-            if (previousData == null || nextData == null)
-            {
-                // If there is no previous or next data, use the available data point.
-                interpolatedData.Add(new DateBalance { Date = currentDate, Balance = previousData?.RunningBalance ?? nextData.RunningBalance });
-            }
-            else
-            {
-                // Interpolate the value based on these two dates.
-                var totalDays = (nextData.Date - previousData.Date).TotalDays;
-                var elapsedDays = (currentDate - previousData.Date).TotalDays;
-                var interpolatedAmount = previousData.RunningBalance + (nextData.RunningBalance - previousData.RunningBalance) * (decimal)(elapsedDays / totalDays);
-
-                interpolatedData.Add(new DateBalance { Date = currentDate, Balance = interpolatedAmount });
-            }
-
-            // Move to the next month.
-            currentDate = currentDate.AddMonths(1);
-        }
-
-        return interpolatedData;
+        if (Math.Abs(number) < 10000)
+            return number > 0 ? Math.Ceiling(number / 1000) * 1000 : Math.Floor(number / 1000) * 1000;
+        else if (Math.Abs(number) < 1000000)
+            return number > 0 ? Math.Ceiling(number / 10000) * 10000 : Math.Floor(number / 10000) * 10000;
+        else
+            return number > 0 ? Math.Ceiling(number / 100000) * 100000 : Math.Floor(number / 100000) * 100000;
     }
 
-    private static void AddDataSeries(PlotModel plotModel, List<DateBalance> transactions, string colorHex, double[] dashes)
+    private static List<ChartDataPoint> AverageWeekly(List<PerformanceTransaction> transactions)
+    {
+        var weeklyAverages = transactions
+            .GroupBy(t => new { t.Date.Year, Week = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(t.Date.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday) })
+            .Select(g => new ChartDataPoint
+            {
+                Date = FirstDateOfWeek(g.Key.Year, g.Key.Week),
+                Balance = g.Average(t => t.RunningBalance)
+            })
+            .OrderBy(t => t.Date)
+            .ToList();
+
+        return weeklyAverages;
+    }
+
+    private static DateTime FirstDateOfWeek(int year, int weekOfYear)
+    {
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)CultureInfo.InvariantCulture.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset);
+        var firstWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(firstMonday, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+
+        if (firstWeek <= 1)
+            weekOfYear -= 1;
+
+        return firstMonday.AddDays(weekOfYear * 7);
+    }
+
+    private static void AddDataSeries(PlotModel plotModel, ChartDataSeries chartDataSeries)
     {
         var dataSeries = new FunctionSeries
         {
-            Color = OxyColor.Parse(colorHex),
+            Color = OxyColor.Parse(chartDataSeries.Color),
             InterpolationAlgorithm = InterpolationAlgorithms.CanonicalSpline,
-            Dashes = dashes,
+            Dashes = chartDataSeries.Dashes,
         };
 
-        foreach (var transaction in transactions)
-            dataSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(transaction.Date.Date), (double)transaction.Balance));
+        foreach (var dataPoint in chartDataSeries.DataPoints)
+            dataSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(dataPoint.Date.Date), (double)dataPoint.Balance));
 
         plotModel.Series.Add(dataSeries);
     }
 
-    internal class DateBalance
+    #region Models
+
+    internal class ChartData
+    {
+        public string Title { get; set; } = string.Empty;
+        public List<ChartDataSeries> DataSeries { get; set; } = [];
+    }
+
+    internal class ChartDataSeries
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
+        public double[] Dashes { get; set; } = [];
+        public List<ChartDataPoint> DataPoints { get; set; } = [];
+    }
+
+    internal class ChartDataPoint
     {
         public DateTime Date { get; set; }
         public decimal Balance { get; set; }
     }
+
+    #endregion
 }
