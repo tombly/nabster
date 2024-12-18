@@ -98,6 +98,11 @@ public static class Performance
             }
         }
 
+        // Remove any groups that have no transactions (there is always a hidden one)
+        var emptyGroups = model.AccountGroups.Where(g => g.AllTransactions.Count() <= 1).ToList();
+        foreach (var group in emptyGroups)
+            model.AccountGroups.Remove(group);
+
         return model;
     }
 
