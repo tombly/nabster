@@ -1,20 +1,23 @@
 @description('The location of the resources')
 param location string = resourceGroup().location
 
-@description('The resource name of the key vault.')
+@description('The resource name of the key vault')
 param vaultName string
 
 @description('The resource name of the function app')
 param functionAppName string
 
-@description('The resource name of the storage account for the function app.')
+@description('The resource name of the storage account for the function app')
 param storageAccountName string
 
 @description('The resource name of the API connection')
 param apicName string
 
-@description('The resource name of the logic app.')
+@description('The resource name of the logic app')
 param logicAppName string
+
+@description('The resource name of the Open AI service')
+param openAIAccountName string
 
 @secure()
 param ynabAccessToken string
@@ -36,6 +39,37 @@ param message string
 
 @description('The phone number to send to the function (used by logic app).')
 param toPhone string
+
+resource openAIAccount 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
+  name: openAIAccountName
+  location: location
+  sku: {
+    name: 'S0'
+  }
+  kind: 'OpenAI'
+  properties: {
+    publicNetworkAccess: 'Enabled'
+    customSubDomainName: openAIAccountName
+  }
+}
+
+resource gpt4 'Microsoft.CognitiveServices/accounts/deployments@2024-04-01-preview' = {
+  parent: openAIAccount
+  name: 'gpt-4o-mini'
+  sku: {
+    name: 'Standard'
+    capacity: 8
+  }
+  properties: {
+    model: {
+      format: 'OpenAI'
+      name: 'gpt-4o-mini'
+    }
+    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
+    currentCapacity: 8
+    raiPolicyName: 'Microsoft.Default'
+  }
+}
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionAppName
@@ -91,6 +125,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'TWILIO_PHONE_NUMBER'
           value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=TwilioPhoneNumber)'
+        }
+        {
+          name: 'OPENAI_URL'
+          value: 'https://${openAIAccountName}.openai.azure.com/'
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -276,7 +314,7 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
             interval: '1'
             schedule: {
               hours: [
-                8
+                9
                 18
               ]
               minutes: [

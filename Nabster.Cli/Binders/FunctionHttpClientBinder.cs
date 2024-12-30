@@ -2,6 +2,7 @@ using System.CommandLine.Binding;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
+using Nabster.Cli.Options;
 
 namespace Nabster.Cli.Binders;
 

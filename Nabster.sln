@@ -5,9 +5,13 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Domain", "Nabster.Domain\Nabster.Domain.csproj", "{D924B73D-3D4C-4FEE-8435-025D89237F3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Cli", "Nabster.Cli\Nabster.Cli.csproj", "{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Chat.Functions", "Nabster.Chat.Functions\Nabster.Chat.Functions.csproj", "{B465C956-6676-4CA6-836A-CE599D16F562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.ChatFunctions", "Nabster.ChatFunctions\Nabster.ChatFunctions.csproj", "{B465C956-6676-4CA6-836A-CE599D16F562}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Reports", "Nabster.Reports\Nabster.Reports.csproj", "{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Chat", "Nabster.Chat\Nabster.Chat.csproj", "{D3573200-6A59-454C-922A-B47C1742C2FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Cli", "Nabster.Cli\Nabster.Cli.csproj", "{B4E9BD42-738C-4787-8F38-A3CBB11A7B5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +23,22 @@ Global
 		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D924B73D-3D4C-4FEE-8435-025D89237F3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A94228D8-2BD0-4F2D-B5F2-BF91D993DE42}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B465C956-6676-4CA6-836A-CE599D16F562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B465C956-6676-4CA6-836A-CE599D16F562}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B465C956-6676-4CA6-836A-CE599D16F562}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B465C956-6676-4CA6-836A-CE599D16F562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3573200-6A59-454C-922A-B47C1742C2FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3573200-6A59-454C-922A-B47C1742C2FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3573200-6A59-454C-922A-B47C1742C2FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3573200-6A59-454C-922A-B47C1742C2FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E9BD42-738C-4787-8F38-A3CBB11A7B5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E9BD42-738C-4787-8F38-A3CBB11A7B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E9BD42-738C-4787-8F38-A3CBB11A7B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E9BD42-738C-4787-8F38-A3CBB11A7B5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

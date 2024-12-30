@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
+using Nabster.Cli.Options;
 using Ynab.Api.Client;
 
 namespace Nabster.Cli.Binders;

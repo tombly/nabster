@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Nabster.ChatFunctions": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7299",
-      "launchBrowser": false
-    }
-  }
-}

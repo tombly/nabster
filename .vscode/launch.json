@@ -8,6 +8,7 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "report",
                 "performance",
                 "--config-file",
                 "config.local.json"
@@ -23,6 +24,7 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "report",
                 "planning",
                 "--config-file",
                 "config.local.json"
@@ -38,11 +40,12 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
+                "report",
                 "spend",
                 "--category-name",
                 "<CATEGORY NAME>",
                 "--month",
-                "2024-09",
+                "2024-12",
                 "--config-file",
                 "config.local.json"
             ],
@@ -51,23 +54,38 @@
             "console": "internalConsole"
         },
         {
-            "name": "Local:Chat Functions",
+            "name": "Chat: Functions",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
         },
         {
-            "name": "Local:Chat",
+            "name": "Chat: Direct",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "chat",
-                "--body",
-                "<MESSAGE>",
-                "--from",
-                "<PHONE NUMBER>",
+                "direct",
+                "--message",
+                "What is my Checking balance?"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Chat: Local",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "args": [
+                "chat",
+                "func",
+                "--message",
+                "What is my Checking balance?",
                 "--config-file",
                 "config.local.json"
             ],
@@ -76,17 +94,16 @@
             "console": "internalConsole"
         },
         {
-            "name": "Azure:Chat",
+            "name": "Chat: Azure",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
             "args": [
                 "chat",
-                "--body",
-                "<MESSAGE>",
-                "--from",
-                "<PHONE NUMBER>",
+                "func",
+                "--message",
+                "What is my Checking balance?"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,

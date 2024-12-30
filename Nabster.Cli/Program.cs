@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using Nabster.Cli.Commands;
+using Nabster.Cli.Options;
 
 namespace Nabster.Cli;
 
@@ -7,14 +8,12 @@ public static class Program
 {
     static async Task<int> Main(string[] args)
     {
-        var rootCommand = new RootCommand("Nabster is a tool for YNAB reporting.");
+        var command = new RootCommand("Nabster is a tool for YNAB reporting.");
 
-        rootCommand.AddGlobalOption(ConfigFileOption.Value);
-        rootCommand.AddChat();
-        rootCommand.AddPerformance();
-        rootCommand.AddPlanning();
-        rootCommand.AddSpend();
+        command.AddGlobalOption(ConfigFileOption.Value);
+        command.AddChat();
+        command.AddReports();
 
-        return await rootCommand.InvokeAsync(args);
+        return await command.InvokeAsync(args);
     }
 }

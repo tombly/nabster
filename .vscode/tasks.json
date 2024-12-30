@@ -21,7 +21,7 @@
 			"type": "process",
 			"problemMatcher": "$msCompile",
 			"options": {
-				"cwd": "${workspaceFolder}/Nabster.ChatFunctions"
+				"cwd": "${workspaceFolder}/Nabster.Chat.Functions"
 			}
 		},
 		{
@@ -40,7 +40,7 @@
 			},
 			"problemMatcher": "$msCompile",
 			"options": {
-				"cwd": "${workspaceFolder}/Nabster.ChatFunctions"
+				"cwd": "${workspaceFolder}/Nabster.Chat.Functions"
 			}
 		},
 		{
@@ -56,7 +56,7 @@
 			"type": "process",
 			"problemMatcher": "$msCompile",
 			"options": {
-				"cwd": "${workspaceFolder}/Nabster.ChatFunctions"
+				"cwd": "${workspaceFolder}/Nabster.Chat.Functions"
 			}
 		},
 		{
@@ -73,14 +73,14 @@
 			"dependsOn": "clean release (functions)",
 			"problemMatcher": "$msCompile",
 			"options": {
-				"cwd": "${workspaceFolder}/Nabster.ChatFunctions"
+				"cwd": "${workspaceFolder}/Nabster.Chat.Functions"
 			}
 		},
 		{
 			"type": "func",
 			"dependsOn": "build (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/Nabster.ChatFunctions/bin/Debug/net8.0"
+				"cwd": "${workspaceFolder}/Nabster.Chat.Functions/bin/Debug/net8.0"
 			},
 			"command": "host start",
 			"isBackground": true,

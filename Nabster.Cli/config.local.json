@@ -1,4 +1,5 @@
 {
     "KeyVaultUrl": "https://mynabster-keyvault.vault.azure.net/",
-    "FunctionAppUrl": "http://localhost:7071/api/"
+    "FunctionAppUrl": "http://localhost:7071/api/",
+    "OpenAIUrl": "https://mynabster-openai.openai.azure.com/"
 }
