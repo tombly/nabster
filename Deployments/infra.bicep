@@ -355,7 +355,7 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
             }
             body: {
               budget: budget
-              body: message
+              message: message
               from: toPhone
             }
           }
