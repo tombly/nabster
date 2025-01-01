@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "report",
                 "performance",
@@ -22,7 +22,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "report",
                 "planning",
@@ -38,7 +38,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "report",
                 "spend",
@@ -64,7 +64,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "chat",
                 "direct",
@@ -80,7 +80,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "chat",
                 "func",
@@ -98,7 +98,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net8.0/Nabster.Cli.dll",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "chat",
                 "func",
