@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Logging;
 using Nabster.Domain.Extensions;
@@ -37,22 +38,22 @@ public class ChatService(AzureOpenAIClient _openAIClient, YnabApiClient _ynabCli
     {
         var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
         var accounts = (await _ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts;
+        var categories = await _ynabClient.GetCategoriesAsync(budgetDetail.Id.ToString(), null);
 
         var snapshot = new StringBuilder();
         foreach (var account in accounts.Where(a => !a.Deleted && !a.Closed))
-            snapshot.AppendLine($"Account: Name={account.Name}, Balance=${account.Balance / 1000m}");
+            snapshot.AppendLine($"Account Name:'{account.Name}', Balance:'{account.Balance / 1000m:C}'");
 
-        var categories = await _ynabClient.GetCategoriesAsync(budgetDetail.Id.ToString(), null);
         foreach (var categoryGroup in categories.Data.Category_groups)
             foreach (var category in categoryGroup.Categories.Where(a => !a.Deleted && !a.Hidden))
             {
-                snapshot.Append($"Category: Group={categoryGroup.Name}");
-                snapshot.Append($", Name={category.Name}");
-                snapshot.Append($", Balance=${category.Balance / 1000m}");
-                snapshot.Append($", Activity=${category.Activity / 1000m}");
-                snapshot.Append($", Need=${CalculateService.MonthlyNeed(category)}");
-                snapshot.Append($", Funded=${ (category.Goal_overall_funded ?? 0) / 1000m}");
-                snapshot.Append($", Target=${ (category.Goal_target ?? 0) / 1000m}");
+                snapshot.Append($"Category Name:'{category.Name}'");
+                snapshot.Append($", Group Name:'{categoryGroup.Name}'");
+                snapshot.Append($", Balance:'{category.Balance / 1000m:C}'");
+                snapshot.Append($", Activity:'{Math.Abs(category.Activity) / 1000m:C}'");
+                snapshot.Append($", Monthly Need:'{CalculateService.MonthlyNeed(category):C}'");
+                snapshot.Append($", Funded:'{ (category.Goal_overall_funded ?? 0) / 1000m:C}'");
+                snapshot.Append($", Target:'{ (category.Goal_target ?? 0) / 1000m:C}'");
                 snapshot.AppendLine();
             }
 
@@ -60,6 +61,9 @@ public class ChatService(AzureOpenAIClient _openAIClient, YnabApiClient _ynabCli
         instructions.AppendLine("You are an AI assistant that succinctly answers questions about the user's personal finances.");
         instructions.AppendLine("Do not include calculations, just answers.");
         instructions.AppendLine("Round values to the nearest dollar. Include thousands separator.");
+
+        Console.WriteLine(snapshot.ToString());
+        Console.WriteLine(instructions.ToString());
 
         return $"{instructions}{snapshot}";
     }

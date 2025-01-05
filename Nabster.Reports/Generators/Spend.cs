@@ -24,7 +24,10 @@ public static class Spend
             .ToList();
 
         foreach (var transaction in transactions)
+        {
             transaction.Memo ??= string.Empty;
+            transaction.Payee_name ??= string.Empty;
+        }
 
         // Group the transactions by their memo text prefix.
         var model = new SpendReport
@@ -48,16 +51,13 @@ public static class Spend
 
     private static string BuildDescription(string memoPrefix, TransactionDetail transaction)
     {
-        var payee = CleanPayee(transaction.Payee_name);
+        var payee = CleanPayee(transaction.Payee_name!);
         var memo = transaction.Memo!.Replace(memoPrefix + ":", string.Empty);
         return string.IsNullOrWhiteSpace(memo) ? payee : $"{payee} - {memo}";
     }
 
-    private static string CleanPayee(string? payee)
+    private static string CleanPayee(string payee)
     {
-        if(payee == null) 
-            return string.Empty;
-
         if(payee.Contains("amazon", StringComparison.InvariantCultureIgnoreCase)) return "Amazon";
         if(payee.Contains("kindle", StringComparison.InvariantCultureIgnoreCase)) return "Kindle";
         if(payee.Contains("microsoft", StringComparison.InvariantCultureIgnoreCase)) return "Microsoft";
