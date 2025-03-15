@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Nabster.Domain.Exceptions;
+using Nabster.Chat.Functions.Exceptions;
 
 namespace Nabster.Chat.Functions.Extensions;
 

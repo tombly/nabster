@@ -15,12 +15,14 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
     <PackageReference Include="spectre.console" Version="0.49.1" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference Include="Ynab.Api.Client" Version="1.73.0" />
+    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.3" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.36.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Nabster.Reports\Nabster.Reports.csproj" />
-    <ProjectReference Include="..\Nabster.Chat\Nabster.Chat.csproj" />
-  </ItemGroup>
-
+  <ItemGroup> 
+    <ProjectReference Include="..\Nabster.Reports\Nabster.Reports.csproj" /> 
+    <ProjectReference Include="..\Nabster.Chat\Nabster.Chat.csproj" /> 
+  </ItemGroup> 
+  
 </Project>

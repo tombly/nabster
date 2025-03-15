@@ -1,8 +1,8 @@
 using System.CommandLine;
+using Microsoft.Extensions.Logging;
 using Nabster.Chat;
 using Nabster.Cli.Binders;
 using Spectre.Console;
-using Microsoft.Extensions.Logging;
 
 namespace Nabster.Cli.Commands;
 
@@ -18,21 +18,21 @@ public static class Direct
 
         command.AddOption(messageOption);
 
-        command.SetHandler(async (message, openAIClient, ynabApiClient, smsClient) =>
+        command.SetHandler(async (message, ynabApiClient, chatCompletionService, smsClient) =>
         {
             await AnsiConsole.Status().StartAsync("Sending message...", async ctx =>
             {
                 using var factory = LoggerFactory.Create(builder => builder.AddConsole());
                 var logger = factory.CreateLogger("Program");
 
-                var chatService = new ChatService(ynabApiClient, openAIClient, smsClient);
+                var chatService = new ChatService(chatCompletionService, ynabApiClient, smsClient);
                 var response = await chatService.Reply(message, logger);
                 Console.WriteLine(response);
             });
         },
         messageOption,
         new YnabClientBinder(),
-        new OpenAIClientBinder(),
+        new ChatCompletionServiceBinder(),
         new SmsClientBinder());
         parentCommand.AddCommand(command);
     }

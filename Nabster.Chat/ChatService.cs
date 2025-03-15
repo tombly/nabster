@@ -1,24 +1,52 @@
-﻿using System.Text;
-using System.Text.Json;
-using Azure.AI.OpenAI;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nabster.Domain.Extensions;
-using Nabster.Domain.Services;
-using OpenAI.Chat;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Ynab.Api.Client;
 
 namespace Nabster.Chat;
 
-public class ChatService(AzureOpenAIClient _openAIClient, YnabApiClient _ynabClient, SmsClient? _smsClient)
+public class ChatService(IChatCompletionService _chatCompletionService, YnabApiClient _ynabApiClient, SmsClient? _smsClient)
 {
     public async Task<string> Reply(string message, ILogger logger)
     {
+        logger.LogInformation("Processing message '{message}'", message);
+
         try
         {
-            var ynabSnapshot = await CreateYnabSnapshot();
-            var response = GenerateCompletion(ynabSnapshot, message);
+            var builder = Kernel.CreateBuilder();
+            builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Trace));
+            builder.Services.AddSingleton(_chatCompletionService);
+            var kernel = builder.Build();
+
+            kernel.Plugins.AddFromObject(new YnabPlugin(_ynabApiClient));
+
+            // Enable planning
+            OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
+            {
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            };
+
+            var history = new ChatHistory();
+
+            var instructions = new StringBuilder();
+            instructions.AppendLine("You are an AI assistant that succinctly answers questions about the user's personal finances.");
+            instructions.AppendLine("Do not include calculations, just answers.");
+            instructions.AppendLine("Round values to the nearest dollar. Include thousands separator.");
+            history.AddSystemMessage(instructions.ToString());
+
+            history.AddUserMessage(message);
+
+            var response = await _chatCompletionService.GetChatMessageContentAsync(
+                history,
+                executionSettings: openAIPromptExecutionSettings,
+                kernel: kernel
+            );
+
             logger.LogInformation("Replied to message '{message}' with '{response}'", message, response);
-            return response;
+            return response.Content ?? "Hm, that didn't work";
         }
         catch (Exception exception)
         {
@@ -32,49 +60,5 @@ public class ChatService(AzureOpenAIClient _openAIClient, YnabApiClient _ynabCli
         ArgumentNullException.ThrowIfNull(_smsClient);
         var response = await Reply(message, logger);
         _smsClient.Send(phoneNumber, response);
-    }
-
-    private async Task<string> CreateYnabSnapshot(string? budgetName = null)
-    {
-        var budgetDetail = await _ynabClient.GetBudgetDetailAsync(budgetName);
-        var accounts = (await _ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts;
-        var categories = await _ynabClient.GetCategoriesAsync(budgetDetail.Id.ToString(), null);
-
-        var snapshot = new StringBuilder();
-        foreach (var account in accounts.Where(a => !a.Deleted && !a.Closed))
-            snapshot.AppendLine($"Account Name:'{account.Name}', Balance:'{account.Balance / 1000m:C}'");
-
-        foreach (var categoryGroup in categories.Data.Category_groups)
-            foreach (var category in categoryGroup.Categories.Where(a => !a.Deleted && !a.Hidden))
-            {
-                snapshot.Append($"Category Name:'{category.Name}'");
-                snapshot.Append($", Group Name:'{categoryGroup.Name}'");
-                snapshot.Append($", Balance:'{category.Balance / 1000m:C}'");
-                snapshot.Append($", Activity:'{Math.Abs(category.Activity) / 1000m:C}'");
-                snapshot.Append($", Monthly Need:'{CalculateService.MonthlyNeed(category):C}'");
-                snapshot.Append($", Funded:'{ (category.Goal_overall_funded ?? 0) / 1000m:C}'");
-                snapshot.Append($", Target:'{ (category.Goal_target ?? 0) / 1000m:C}'");
-                snapshot.AppendLine();
-            }
-
-        var instructions = new StringBuilder();
-        instructions.AppendLine("You are an AI assistant that succinctly answers questions about the user's personal finances.");
-        instructions.AppendLine("Do not include calculations, just answers.");
-        instructions.AppendLine("Round values to the nearest dollar. Include thousands separator.");
-
-        Console.WriteLine(snapshot.ToString());
-        Console.WriteLine(instructions.ToString());
-
-        return $"{instructions}{snapshot}";
-    }
-
-    private string GenerateCompletion(string systemMessage, string userMessage)
-    {
-        var chatClient = _openAIClient.GetChatClient("gpt-4o-mini");
-        ChatCompletion completion = chatClient.CompleteChat([
-            new SystemChatMessage(systemMessage),
-            new UserChatMessage(userMessage)]);
-
-        return $"{completion.Content[0].Text}";
     }
 }

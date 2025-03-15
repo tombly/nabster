@@ -1,12 +1,13 @@
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Azure.Security.KeyVault.Secrets;
+using System.Net.Http.Headers;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Nabster.Chat;
 using Ynab.Api.Client;
-using System.Net.Http.Headers;
-using Azure.AI.OpenAI;
 
 #if DEBUG
 
@@ -40,10 +41,10 @@ var host = new HostBuilder()
               }
             });
         });
-        services.AddSingleton<AzureOpenAIClient>(sp =>
+        services.AddSingleton<IChatCompletionService>(sp =>
         {
             var openAiUrl = Environment.GetEnvironmentVariable("OPENAI_URL") ?? throw new Exception("OPENAI_URL not set");
-            return new(new Uri(openAiUrl), new DefaultAzureCredential());
+            return new AzureOpenAIChatCompletionService("gpt-4o-mini", openAiUrl, new DefaultAzureCredential());
         });
     })
     .Build();

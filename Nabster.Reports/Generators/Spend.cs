@@ -1,5 +1,5 @@
-using Nabster.Domain.Extensions;
 using Ynab.Api.Client;
+using Ynab.Api.Client.Extensions;
 
 namespace Nabster.Reports.Generators;
 
@@ -41,7 +41,7 @@ public static class Spend
                 {
                     Description = BuildDescription(g.Key, t),
                     Date = t.Date,
-                    Amount = t.Amount / 1000m
+                    Amount = t.Amount.FromMilliunits()
                 }).ToList()
             }).ToList()
         };

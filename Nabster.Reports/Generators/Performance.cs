@@ -1,5 +1,5 @@
-using Nabster.Domain.Extensions;
 using Ynab.Api.Client;
+using Ynab.Api.Client.Extensions;
 
 namespace Nabster.Reports.Generators;
 
@@ -51,7 +51,7 @@ public static class Performance
             foreach (var transaction in transactions.Where(t => t.Account_name == account.Name).OrderBy(t => t.Date))
             {
                 var date = transaction.Date;
-                var amount = transaction.Amount / 1000m;
+                var amount = transaction.Amount.FromMilliunits();
 
                 // Account for any loan interest.
                 if (account.Debt_interest_rates!.Any() && cumulative != 0)
@@ -111,14 +111,14 @@ public static class Performance
         if (!periodicValue.Any())
             throw new Exception("No periodic values");
 
-        var foundValue = 0m;
+        var foundValue = 0L;
         foreach (var rate in periodicValue.OrderBy(r => DateTime.Parse(r.Key)))
         {
             if (DateTime.Parse(rate.Key) > date)
                 break;
             foundValue = rate.Value;
         }
-        return foundValue / 1000m;
+        return foundValue.FromMilliunits();
     }
 
     private static string NameForGroupPrefix(string prefix)

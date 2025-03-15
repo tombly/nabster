@@ -2,7 +2,6 @@ using System.CommandLine;
 using Nabster.Cli.Binders;
 using Nabster.Cli.Options;
 using Nabster.Reports.Exporters;
-using Nabster.Reports.Generators;
 using Spectre.Console;
 
 namespace Nabster.Cli.Commands;

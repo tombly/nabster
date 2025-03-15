@@ -1,6 +1,5 @@
-using Nabster.Domain.Extensions;
-using Nabster.Domain.Services;
 using Ynab.Api.Client;
+using Ynab.Api.Client.Extensions;
 
 namespace Nabster.Reports.Generators;
 
@@ -42,9 +41,9 @@ public static class Planning
                                 CategoryName = c.Name,
                                 GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency),
                                 GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
-                                GoalTarget = c.Goal_target > 0 ? (c.Goal_target.Value / 1000m) : 0,
+                                GoalTarget = c.Goal_target > 0 ? c.Goal_target.Value.FromMilliunits() : 0,
                                 GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
-                                MonthlyCost = CalculateService.MonthlyNeed(c)
+                                MonthlyCost = c.MonthlyNeed().FromMilliunits()
                             })
                             .OrderBy(c => c.CategoryName)]
                     })
