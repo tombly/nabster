@@ -56,9 +56,9 @@ public static class PlanningToHtml
         html.AppendLine("<div class='flex-column-wide'>Category</div>");
         html.AppendLine("<div class='flex-column'>Cadence</div>");
         html.AppendLine("<div class='flex-column'>Day</div>");
-        html.AppendLine("<div class='flex-column'>Amount</div>");
+        html.AppendLine("<div class='flex-column'>Yearly</div>");
         html.AppendLine("<div class='flex-column'>Monthly</div>");
-        html.AppendLine("<div class='flex-column'>Complete</div>");
+        html.AppendLine("<div class='flex-column'>Progress</div>");
         html.AppendLine("</div>");
     }
 
@@ -73,7 +73,7 @@ public static class PlanningToHtml
         html.AppendLine($"<div class='flex-column-wide'>{category.CategoryName}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalCadence}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalDay}</div>");
-        html.AppendLine($"<div class='flex-column'>{category.GoalTarget:C}</div>");
+        html.AppendLine($"<div class='flex-column'>{category.YearlyCost:C}</div>");
         html.AppendLine($"<div class='flex-column'>{category.MonthlyCost:C}</div>");
 
         if (category.GoalPercentageComplete != null)

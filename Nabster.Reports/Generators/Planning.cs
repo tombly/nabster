@@ -43,7 +43,8 @@ public static class Planning
                                 GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
                                 GoalTarget = c.Goal_target > 0 ? c.Goal_target.Value.FromMilliunits() : 0,
                                 GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
-                                MonthlyCost = c.MonthlyNeed().FromMilliunits()
+                                MonthlyCost = c.MonthlyNeed().FromMilliunits(),
+                                YearlyCost = (c.MonthlyNeed() * 12).FromMilliunits() 
                             })
                             .OrderBy(c => c.CategoryName)]
                     })
@@ -53,7 +54,7 @@ public static class Planning
         foreach (var group in model.Groups)
         {
             group.MonthlyTotal = group.Categories.Sum(c => c.MonthlyCost);
-            group.YearlyTotal = group.Categories.Sum(c => c.GoalTarget);
+            group.YearlyTotal = group.Categories.Sum(c => c.YearlyCost);
         }
 
         foreach (var group in model.Groups)
@@ -181,6 +182,7 @@ public class PlanningCategory
     public decimal GoalTarget { get; set; }
     public decimal? GoalPercentageComplete { get; set; }
     public decimal MonthlyCost { get; set; }
+    public decimal YearlyCost { get; set; }
 }
 
 #endregion
