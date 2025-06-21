@@ -32,15 +32,24 @@ public static class PerformanceToHtml
             html.AppendLine("<div style=\"display: flex;\">");
 
             // Chart on the left.
-            html.AppendLine("<div>");
+            html.AppendLine("<div style=\"margin-right: 24px;\">");
             html.AppendLine(chartSvg);
             html.AppendLine("</div>");
 
             // Details on the right.
             html.AppendLine("<div style=\"flex: 1\">");
-            html.AppendLine($"Begin:&nbsp; {firstTransaction.Balance:C0} ({firstTransaction.Date:M/yyyy})<br>");
-            html.AppendLine($"End:&nbsp;&nbsp;&nbsp; {lastTransaction.Balance:C0} ({lastTransaction.Date:M/yyyy})<br>");
-            html.AppendLine($"Change: {lastTransaction.Balance - firstTransaction.Balance:C0}<br>");
+            var isNegative = lastTransaction.Balance < 0;
+            var balanceBg = isNegative ? "#f8d7da" : "#d4edda";
+            var balanceColor = isNegative ? "#dc3545" : "#155724";
+            html.AppendLine($"<span style='background: {balanceBg}; color: {balanceColor}; border-radius: 6px; font-size: 1.5em; padding: 4px 10px; display: inline-block;'>{lastTransaction.Balance:C0}</span><br><br>");
+            var change = lastTransaction.Balance - firstTransaction.Balance;
+            var arrow = change > 0
+                ? "<span style='color: #155724; font-size: 12px;'>⬆</span>"
+                : change < 0
+                    ? "<span style='color: #dc3545; font-size: 12px;'>⬇</span>"
+                    : "";
+            html.AppendLine($"Change: {change:C0} {arrow}<br>");
+            html.AppendLine($"Start:&nbsp; {firstTransaction.Balance:C0} ({firstTransaction.Date:M/yyyy})<br>");
             html.AppendLine("<br>");
 
             foreach (var dataSeries in chart.DataSeries)
@@ -186,9 +195,14 @@ public static class PerformanceToHtml
             return number > 0 ? Math.Ceiling(number / 100000) * 100000 : Math.Floor(number / 100000) * 100000;
     }
 
+    /// <summary>
+    /// Calculates the average weekly balance from a list of transactions. Skip
+    /// the last transaction as it is the current balance and not part of the
+    /// weekly average.
+    /// </summary>
     private static List<ChartDataPoint> AverageWeekly(List<PerformanceTransaction> transactions)
     {
-        var weeklyAverages = transactions
+        var weeklyAverages = transactions.SkipLast(1)
             .GroupBy(t => new { t.Date.Year, Week = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(t.Date.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday) })
             .Select(g => new ChartDataPoint
             {
@@ -197,6 +211,14 @@ public static class PerformanceToHtml
             })
             .OrderBy(t => t.Date)
             .ToList();
+
+        // Add a data point for the last transaction so that the chart ends with
+        // the current balance.
+        weeklyAverages.Add(new ChartDataPoint
+        {
+            Date = transactions.Last().Date.Date,
+            Balance = transactions.Last().RunningBalance
+        });
 
         return weeklyAverages;
     }
