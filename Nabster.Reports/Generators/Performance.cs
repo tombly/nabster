@@ -13,7 +13,7 @@ public static class Performance
     public static async Task<PerformanceReport> Generate(string? budgetName, YnabApiClient ynabClient)
     {
         var budgetDetail = await ynabClient.GetBudgetDetailAsync(budgetName);
-        var accounts = (await ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts;
+        var accounts = (await ynabClient.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
 
         // Create our list of account name prefixes that we'll group the
         // accounts by.
