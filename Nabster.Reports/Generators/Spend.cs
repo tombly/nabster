@@ -18,12 +18,40 @@ public static class Spend
         var startOfMonth = new DateTimeOffset(DateTime.Parse(month).Year, DateTime.Parse(month).Month, 1, 0, 0, 0, TimeSpan.Zero);
         var transactions = (await _ynabClient.GetTransactionsAsync(budgetDetail.Id.ToString(), startOfMonth, null, null)).Data.Transactions;
 
-        transactions = transactions
+        // Flatten subtransactions into the main transaction list.
+        var allTransactions = new List<TransactionDetail>();
+        foreach (var transaction in transactions)
+        {
+            allTransactions.Add(transaction);
+            if (transaction.Subtransactions != null && transaction.Subtransactions.Any())
+            {
+                foreach (var sub in transaction.Subtransactions)
+                {
+                    // Create a new TransactionDetail for the subtransaction, inheriting from the parent.
+                    var subDetail = new TransactionDetail
+                    {
+                        Id = sub.Id,
+                        Date = transaction.Date,
+                        Amount = sub.Amount,
+                        Memo = sub.Memo ?? transaction.Memo,
+                        Payee_name = transaction.Payee_name,
+                        Category_id = sub.Category_id ?? transaction.Category_id,
+                        Account_id = transaction.Account_id,
+                        Account_name = transaction.Account_name,
+                        Subtransactions = new List<SubTransaction>() // subtransactions of subtransactions are not supported
+                    };
+                    allTransactions.Add(subDetail);
+                }
+            }
+        }
+
+        // Now filter and process allTransactions instead of transactions
+        allTransactions = allTransactions
             .Where(t => t.Category_id == categoryId)
             .Where(t => t.Date.Month == DateTime.Parse(month).Month)
             .ToList();
 
-        foreach (var transaction in transactions)
+        foreach (var transaction in allTransactions)
         {
             transaction.Memo ??= string.Empty;
             transaction.Payee_name ??= string.Empty;
@@ -34,7 +62,7 @@ public static class Spend
         {
             BudgetName = budgetDetail.Name,
             MonthName = DateTime.Parse(month).ToString("MMMM yyyy"),
-            Groups = transactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroup
+            Groups = allTransactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroup
             {
                 MemoPrefix = g.Key,
                 Transactions = g.Select(t => new SpendTransaction
@@ -42,7 +70,7 @@ public static class Spend
                     Description = BuildDescription(g.Key, t),
                     Date = t.Date,
                     Amount = t.Amount.FromMilliunits()
-                }).ToList()
+                }).ToList().OrderBy(t => t.Description).ToList()
             }).ToList()
         };
 
