@@ -8,7 +8,7 @@ public static class PlanningToHtml
     public static byte[] Create(PlanningReport report)
     {
         var html = new StringBuilder();
-        html.AppendLine($"<html><body style=\"font-family: monospace;\">");
+        html.AppendLine($"<html><head><meta charset=\"utf-8\"></head><body style=\"font-family: monospace;\">");
 
         CreateStyle(html);
         CreateHeaderRow(html);
