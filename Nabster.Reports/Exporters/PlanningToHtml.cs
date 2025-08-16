@@ -35,7 +35,7 @@ public static class PlanningToHtml
                 }
 
                 .flex-column {
-                    flex: 0 0 110px;
+                    flex: 0 0 100px;
                     border-bottom: 1px solid #dddddd;
                 }
 
@@ -46,6 +46,10 @@ public static class PlanningToHtml
 
                 .no-underline {
                     border: none;
+                }
+
+                .align-right {
+                    text-align: right;
                 }
             </style>");
     }
@@ -73,11 +77,11 @@ public static class PlanningToHtml
         html.AppendLine($"<div class='flex-column-wide'>{category.CategoryName}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalCadence}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalDay}</div>");
-        html.AppendLine($"<div class='flex-column'>{category.YearlyCost:C}</div>");
-        html.AppendLine($"<div class='flex-column'>{category.MonthlyCost:C}</div>");
+        html.AppendLine($"<div class='flex-column align-right'>{category.YearlyCost:C}</div>");
+        html.AppendLine($"<div class='flex-column align-right'>{category.MonthlyCost:C}</div>");
 
         if (category.GoalPercentageComplete != null)
-            html.AppendLine($"<div class='flex-column'>{category.GoalPercentageComplete:P0}</div>");
+            html.AppendLine($"<div class='flex-column align-right'>{category.GoalPercentageComplete:P0}</div>");
 
         html.AppendLine("</div>");
     }
@@ -88,8 +92,8 @@ public static class PlanningToHtml
         html.AppendLine($"<div class='flex-column-wide no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'><b>Group Total</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{yearlyTotal:C}</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{monthlyTotal:C}</b></div>");
+        html.AppendLine($"<div class='flex-column no-underline align-right'><b>{yearlyTotal:C}</b></div>");
+        html.AppendLine($"<div class='flex-column no-underline align-right'><b>{monthlyTotal:C}</b></div>");
         html.AppendLine("</div>");
     }
 
@@ -100,8 +104,8 @@ public static class PlanningToHtml
         html.AppendLine($"<div class='flex-column-wide no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'><b>Total</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{yearlyTotal:C}</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{monthlyTotal:C}</b></div>");
+        html.AppendLine($"<div class='flex-column no-underline align-right'><b>{yearlyTotal:C}</b></div>");
+        html.AppendLine($"<div class='flex-column no-underline align-right'><b>{monthlyTotal:C}</b></div>");
         html.AppendLine("</div>");
     }
 }
