@@ -400,3 +400,5 @@ FodyWeavers.xsd
 .DS_Store
 
 Deployments/infra.local.bicepparam
+
+Nabster.Cli/config.json

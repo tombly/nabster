@@ -1,5 +1,0 @@
-{
-    "KeyVaultUrl": "https://mynabster-keyvault.vault.azure.net/",
-    "FunctionAppUrl": "https://mynabster-functionapp.azurewebsites.net/api/",
-    "OpenAIUrl": "https://mynabster-openai.openai.azure.com/"
-}
