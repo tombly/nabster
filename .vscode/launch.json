@@ -79,7 +79,9 @@
                 "chat",
                 "func",
                 "--message",
-                "What is my Checking balance?"
+                "What is my Checking balance?",
+                "--url",
+                "http://localhost:7071/api/"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,

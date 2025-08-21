@@ -14,17 +14,19 @@ internal sealed class FuncCommand : Command
     {
         Options.Add(new Option<string>("--message") { Description = "The message to send." });
         Options.Add(new Option<string>("--from") { Description = "The phone number of the sender." });
+        Options.Add(new Option<string>("--url") { Description = "The URL of the function app." });
 
         SetAction(async parseResult =>
         {
             var functionAppUrl = options.Value.Url ?? throw new InvalidOperationException("Function App Url not found.");
             var functionAppKey = options.Value.Key ?? throw new InvalidOperationException("Function App Key not found.");
 
-            var httpClient = new HttpClient { BaseAddress = new Uri(functionAppUrl) };
-            httpClient.DefaultRequestHeaders.Add("x-functions-key", functionAppKey);
-
             var message = parseResult.GetValue<string>("--message");
             var from = parseResult.GetValue<string>("--from");
+            var url = parseResult.GetValue<string>("--url") ?? functionAppUrl;
+
+            var httpClient = new HttpClient { BaseAddress = new Uri(url) };
+            httpClient.DefaultRequestHeaders.Add("x-functions-key", functionAppKey);
 
             await ansiConsole.Status().StartAsync("Sending message...", async ctx =>
                 {
