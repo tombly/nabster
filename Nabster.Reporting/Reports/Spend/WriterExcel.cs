@@ -1,20 +1,20 @@
-using Nabster.Reports.Extensions;
-using Nabster.Reports.Generators;
+using Nabster.Reporting.Extensions;
+using Nabster.Reporting.Reports.Spend.Models;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Nabster.Reports.Exporters;
+namespace Nabster.Reporting.Reports.Spend;
 
 public static class SpendToExcel
 {
-    public static byte[] Create(SpendReport report)
+    public static byte[] ToExcel(this SpendReportModel report)
     {
         var workbook = new XSSFWorkbook();
         CreateSheet(workbook, report);
         return workbook.ToByteArray();
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, SpendReport report)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, SpendReportModel report)
     {
         var sheet = workbook.CreateSheet("Spend");
         var rowCount = 0;
@@ -55,7 +55,7 @@ public static class SpendToExcel
         return row;
     }
 
-    private static IRow CreateTransactionRow(ISheet sheet, int rowCount, SpendTransaction transaction)
+    private static IRow CreateTransactionRow(ISheet sheet, int rowCount, SpendTransactionModel transaction)
     {
         var row = sheet.CreateRow(rowCount);
         row.CreateCell(0).SetCellValue(transaction.Description);

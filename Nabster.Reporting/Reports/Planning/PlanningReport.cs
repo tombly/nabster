@@ -1,16 +1,17 @@
-using Nabster.Reports.Services;
+using Nabster.Reporting.Reports.Planning.Models;
+using Nabster.Reporting.Services;
 using Ynab.Api.Client.Extensions;
 
-namespace Nabster.Reports.Generators;
+namespace Nabster.Reporting.Reports.Planning;
 
 /// <summary>
 /// Generates a monthly planning report. Monthly and non-monthly (quarterly,
 /// annually, etc.) recurring goals are supported, as well as non-recurring
 /// goals.
 /// </summary>
-public class Planning(YnabService _ynabService)
+public class PlanningReport(YnabService _ynabService)
 {
-    public async Task<PlanningReport> Generate(string? budgetName)
+    public async Task<PlanningReportModel> Build(string? budgetName)
     {
         var budgetDetail = await _ynabService.Client.GetBudgetDetailAsync(budgetName);
 
@@ -20,7 +21,7 @@ public class Planning(YnabService _ynabService)
             category.Category_group_name = budgetDetail.Category_groups!.FirstOrDefault(g => g.Id == category.Category_group_id)?.Name;
 
         // Build our model.
-        var model = new PlanningReport
+        var model = new PlanningReportModel
         {
             BudgetName = budgetDetail.Name,
             Groups = [.. budgetDetail.Categories
@@ -29,14 +30,14 @@ public class Planning(YnabService _ynabService)
                 .Select(c => c.Category_group_name)
                 .Distinct()
                 .Select(groupName =>
-                    new PlanningGroup
+                    new PlanningGroupModel
                     {
                         CategoryGroupName = groupName!,
                         Categories = [.. budgetDetail.Categories
                             .Where(c => c.Category_group_name == groupName)
                             .Where(c => !c.Deleted)
                             .Where(c => !c.Hidden)
-                            .Select(c => new PlanningCategory
+                            .Select(c => new PlanningCategoryModel
                             {
                                 CategoryName = c.Name,
                                 GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency),
@@ -155,34 +156,3 @@ public class Planning(YnabService _ynabService)
         };
     }
 }
-
-#region Models
-
-public class PlanningReport
-{
-    public string BudgetName { get; set; } = string.Empty;
-    public List<PlanningGroup> Groups { get; set; } = [];
-    public decimal MonthlyTotal { get; set; }
-    public decimal YearlyTotal { get; set; }
-}
-
-public class PlanningGroup
-{
-    public string CategoryGroupName { get; set; } = string.Empty;
-    public List<PlanningCategory> Categories { get; set; } = [];
-    public decimal MonthlyTotal { get; set; }
-    public decimal YearlyTotal { get; set; }
-}
-
-public class PlanningCategory
-{
-    public string CategoryName { get; set; } = string.Empty;
-    public string GoalCadence { get; set; } = string.Empty;
-    public string GoalDay { get; set; } = string.Empty;
-    public decimal GoalTarget { get; set; }
-    public decimal? GoalPercentageComplete { get; set; }
-    public decimal MonthlyCost { get; set; }
-    public decimal YearlyCost { get; set; }
-}
-
-#endregion

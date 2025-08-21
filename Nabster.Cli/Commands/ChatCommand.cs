@@ -2,15 +2,12 @@ using System.CommandLine;
 
 namespace Nabster.Cli.Commands;
 
-public static class ChatCommand
+internal sealed class ChatCommand : Command
 {
-    public static void AddChat(this Command parentCommand)
+    public ChatCommand(DirectCommand directCommand, FuncCommand funcCommand)
+        : base("chat", "Chat with Nabster.")
     {
-        var command = new Command("chat", "Chat with Nabster.");
-
-        command.AddDirect();
-        command.AddFunc();
-
-        parentCommand.AddCommand(command);
+        Subcommands.Add(directCommand);
+        Subcommands.Add(funcCommand);
     }
 }

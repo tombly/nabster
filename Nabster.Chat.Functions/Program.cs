@@ -1,13 +1,10 @@
-using System.Net.Http.Headers;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
-using Nabster.Chat;
-using Ynab.Api.Client;
+using Nabster.Chat.Config;
 
 #if DEBUG
 
@@ -28,24 +25,26 @@ var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
     .ConfigureServices(services =>
     {
+        var openAiUrl = Environment.GetEnvironmentVariable("OPENAI_URL") ?? throw new Exception("OPENAI_URL not set");
+        var ynabAccessToken = Environment.GetEnvironmentVariable("YNAB_ACCESS_TOKEN") ?? throw new Exception("YNAB_ACCESS_TOKEN not set");
+        var twilioPhoneNumber = Environment.GetEnvironmentVariable("TWILIO_PHONE_NUMBER") ?? throw new Exception("TWILIO_PHONE_NUMBER not set");
+        var twilioAccountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID") ?? throw new Exception("TWILIO_ACCOUNT_SID not set");
+        var twilioAuthToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN") ?? throw new Exception("TWILIO_AUTH_TOKEN not set");
+
+        var settings = new HostApplicationBuilderSettings { Configuration = new ConfigurationManager() };
+        settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Chat:OpenAiUrl"] = openAiUrl,
+            ["Chat:YnabAccessToken"] = ynabAccessToken,
+            ["Chat:TwilioAccountSid"] = twilioAccountSid,
+            ["Chat:TwilioAuthToken"] = twilioAuthToken,
+            ["Chat:TwilioPhoneNumber"] = twilioPhoneNumber,
+        });
+        services.Configure<ChatOptions>(settings.Configuration.GetSection(ChatOptions.Section));
+
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         services.AddNabsterChat();
-        services.AddSingleton<YnabApiClient>(sp =>
-        {
-            var ynabAccessToken = Environment.GetEnvironmentVariable("YNAB_ACCESS_TOKEN") ?? throw new Exception("YNAB_ACCESS_TOKEN not set");
-            return new YnabApiClient(new HttpClient()
-            {
-                DefaultRequestHeaders = {
-                    Authorization = new AuthenticationHeaderValue("Bearer", ynabAccessToken)
-              }
-            });
-        });
-        services.AddSingleton<IChatCompletionService>(sp =>
-        {
-            var openAiUrl = Environment.GetEnvironmentVariable("OPENAI_URL") ?? throw new Exception("OPENAI_URL not set");
-            return new AzureOpenAIChatCompletionService("gpt-4o-mini", openAiUrl, new DefaultAzureCredential());
-        });
     })
     .Build();
 

@@ -1,7 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
+using Nabster.Chat.Services;
 
-namespace Nabster.Chat;
+namespace Nabster.Chat.Config;
 
+/// <summary>
+/// Registers necessary services for the Chat feature.
+/// </summary>
 public static class DependencyModule
 {
     public static IServiceCollection AddNabsterChat(this IServiceCollection services)
@@ -9,7 +13,9 @@ public static class DependencyModule
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddTransient<ChatService>();
-        services.AddTransient<SmsClient>();
+        services.AddTransient<SmsService>();
+        services.AddTransient<ChatCompletionService>();
+        services.AddTransient<YnabService>();
 
         return services;
     }

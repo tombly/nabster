@@ -1,9 +1,9 @@
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 
-namespace Nabster.Reports.Extensions;
+namespace Nabster.Reporting.Extensions;
 
-public static class ExcelExtensions
+internal static class ExcelExtensions
 {
     public static ICellStyle AddDateStyle(this ICellStyle style, IWorkbook workbook)
     {

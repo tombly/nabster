@@ -2,16 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Report: Performance",
+            "name": "Report: Historical",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "report",
-                "performance",
-                "--config-file",
-                "config.local.json"
+                "historical"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -25,9 +23,7 @@
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net9.0/Nabster.Cli.dll",
             "args": [
                 "report",
-                "planning",
-                "--config-file",
-                "config.local.json"
+                "planning"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -43,11 +39,9 @@
                 "report",
                 "spend",
                 "--category-name",
-                "<CATEGORY NAME>",
+                "Discretionary",
                 "--month",
-                "2024-12",
-                "--config-file",
-                "config.local.json"
+                "2025-08"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -69,7 +63,7 @@
                 "chat",
                 "direct",
                 "--message",
-                "What is my Checking balance?"
+                "What is the Activity of the Discretionary category, both the dollar amount and percentage of monthly need? Answer in the format 'Category Name: activity dollar amount (percentage)'"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -85,9 +79,7 @@
                 "chat",
                 "func",
                 "--message",
-                "What is my Checking balance?",
-                "--config-file",
-                "config.local.json"
+                "What is my Checking balance?"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,

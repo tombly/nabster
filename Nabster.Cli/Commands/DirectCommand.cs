@@ -1,39 +1,29 @@
 using System.CommandLine;
 using Microsoft.Extensions.Logging;
-using Nabster.Chat;
-using Nabster.Cli.Binders;
+using Nabster.Chat.Services;
 using Spectre.Console;
 
 namespace Nabster.Cli.Commands;
 
-public static class Direct
+internal sealed class DirectCommand : Command
 {
-    public static void AddDirect(this Command parentCommand)
+    public DirectCommand(IAnsiConsole ansiConsole, ChatService chatService, ILogger logger)
+        : base("direct", "Chat with Nabster.")
     {
-        var command = new Command("direct", "Chat with Nabster.");
+        var messageOption = new Option<string>("--message") { Description = "The message to send." };
+        Options.Add(messageOption);
 
-        var messageOption = new Option<string>(
-            aliases: ["--message", "-m"],
-            description: "The message to send.");
-
-        command.AddOption(messageOption);
-
-        command.SetHandler(async (message, ynabApiClient, chatCompletionService, smsClient) =>
+        SetAction(async parseResult =>
         {
-            await AnsiConsole.Status().StartAsync("Sending message...", async ctx =>
+            await ansiConsole.Status().StartAsync("Sending message...", async ctx =>
             {
-                using var factory = LoggerFactory.Create(builder => builder.AddConsole());
-                var logger = factory.CreateLogger("Program");
-
-                var chatService = new ChatService(chatCompletionService, ynabApiClient, smsClient);
-                var response = await chatService.Reply(message, logger);
-                Console.WriteLine(response);
+                var message = parseResult.GetValue(messageOption);
+                if (message != null)
+                {
+                    var response = await chatService.Reply(message, logger);
+                    ansiConsole.WriteLine(response);
+                }
             });
-        },
-        messageOption,
-        new YnabClientBinder(),
-        new ChatCompletionServiceBinder(),
-        new SmsClientBinder());
-        parentCommand.AddCommand(command);
+        });
     }
 }

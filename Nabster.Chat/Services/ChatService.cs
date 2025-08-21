@@ -4,11 +4,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Ynab.Api.Client;
 
-namespace Nabster.Chat;
+namespace Nabster.Chat.Services;
 
-public class ChatService(IChatCompletionService _chatCompletionService, YnabApiClient _ynabApiClient, SmsClient? _smsClient)
+/// <summary>
+/// Provides answers to questions about a user's personal finances in YNAB.
+/// </summary>
+public class ChatService(ChatCompletionService _chatCompletionService, YnabService _ynabService, SmsService _smsService)
 {
     public async Task<string> Reply(string message, ILogger logger)
     {
@@ -21,7 +23,7 @@ public class ChatService(IChatCompletionService _chatCompletionService, YnabApiC
             builder.Services.AddSingleton(_chatCompletionService);
             var kernel = builder.Build();
 
-            kernel.Plugins.AddFromObject(new YnabPlugin(_ynabApiClient));
+            kernel.Plugins.AddFromObject(new YnabPlugin(_ynabService.Client));
 
             // Enable planning
             OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
@@ -57,8 +59,7 @@ public class ChatService(IChatCompletionService _chatCompletionService, YnabApiC
 
     public async Task ReplyViaSms(string message, string phoneNumber, ILogger logger)
     {
-        ArgumentNullException.ThrowIfNull(_smsClient);
         var response = await Reply(message, logger);
-        _smsClient.Send(phoneNumber, response);
+        _smsService.Send(phoneNumber, response);
     }
 }

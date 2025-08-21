@@ -1,20 +1,20 @@
-using Nabster.Reports.Extensions;
-using Nabster.Reports.Generators;
+using Nabster.Reporting.Extensions;
+using Nabster.Reporting.Reports.Planning.Models;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Nabster.Reports.Exporters;
+namespace Nabster.Reporting.Reports.Planning;
 
 public static class PlanningToExcel
 {
-    public static byte[] Create(PlanningReport report)
+    public static byte[] ToExcel(this PlanningReportModel report)
     {
         var workbook = new XSSFWorkbook();
         CreateSheet(workbook, report);
         return workbook.ToByteArray();
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, PlanningReport report)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, PlanningReportModel report)
     {
         var sheet = workbook.CreateSheet("Planning");
         var rowCount = 0;
@@ -53,7 +53,7 @@ public static class PlanningToExcel
         row.Cells[5].CellStyle = sheet.Workbook.CreateCellStyle().AddFontStyle(sheet.Workbook, isBold: true, isGray: true);
     }
 
-    private static IRow CreateCategoryRow(ISheet sheet, int rowCount, PlanningCategory category)
+    private static IRow CreateCategoryRow(ISheet sheet, int rowCount, PlanningCategoryModel category)
     {
         var row = sheet.CreateRow(rowCount);
         row.CreateCell(0).SetCellValue(category.CategoryName);

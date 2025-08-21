@@ -1,65 +1,65 @@
 using System.CommandLine;
-using Nabster.Cli.Binders;
-using Nabster.Cli.Options;
-using Nabster.Reports.Exporters;
+using Nabster.Reporting.Reports.Spend;
 using Spectre.Console;
 
 namespace Nabster.Cli.Commands;
 
-public static class SpendCommand
+internal sealed class SpendCommand : Command
 {
-    public static void AddSpend(this Command parentCommand)
+    public SpendCommand(IAnsiConsole ansiConsole, SpendReport spendReport)
+        : base("spend", "Generate a spend report for a budget category.")
     {
-        var command = new Command("spend", "Generate a spend report for a budget category.");
+        Options.Add(new Option<string>("--budget-name")
+        {
+            Description = "The name of the budget to generate the report for."
+        });
 
-        var budgetNameOption = new Option<string>(
-            aliases: ["--budget-name", "-b"],
-            description: "The name of the budget to generate the report for.");
+        Options.Add(new Option<string>("--output-format")
+        {
+            Description = "The output file type, xlsx or html (default)."
+        });
 
-        var categoryNameOption = new Option<string>(
-            aliases: ["--category-name", "-c"],
-            description: "The name of the category to generate the report for.");
+        Options.Add(new Option<string>("--category-name")
+        {
+            Description = "The name of the category to generate the report for.",
+            Required = true
+        });
 
-        var yearMonthOption = new Option<string>(
-            aliases: ["--month", "-m"],
-            description: "The year and month to generate the report for, e.g.: 2024-05");
+        Options.Add(new Option<string>("--month")
+        {
+            Description = "The year and month to generate the report for, e.g.: 2025-08",
+            Required = true
+        });
 
-        var outputFormatOption = new Option<string>(
-             aliases: ["--output-format", "-o"],
-             description: "The output file type, xlsx or html (default).");
+        SetAction(async parseResult =>
+        {
+            await ansiConsole.Status().StartAsync("Building report", async ctx =>
+                {
+                    var budgetName = parseResult.GetValue<string>("--budget-name");
+                    var outputFormat = parseResult.GetValue<string>("--output-format") ?? "html";
+                    var categoryName = parseResult.GetValue<string>("--category-name");
+                    var yearMonth = parseResult.GetValue<string>("--month");
 
-        command.AddOption(budgetNameOption);
-        command.AddOption(categoryNameOption);
-        command.AddOption(yearMonthOption);
-        command.AddOption(outputFormatOption);
+                    var report = await spendReport.Build(budgetName, categoryName!, yearMonth!);
 
-        command.SetHandler(async (budgetName, categoryName, yearMonth, outputFormat, configFile, ynabClient) =>
-            {
-                await AnsiConsole.Status().StartAsync("Generating", async ctx =>
+                    byte[] fileBytes;
+                    string fileExtension;
+                    switch (outputFormat)
                     {
-                        var report = await Reports.Generators.Spend.Generate(budgetName, categoryName, yearMonth, ynabClient);
-
-                        byte[] fileBytes;
-                        string fileExtension;
-                        switch (outputFormat)
-                        {
-                            case "xlsx":
-                                fileBytes = SpendToExcel.Create(report);
-                                fileExtension = "xlsx";
-                                break;
-                            default:
-                                fileBytes = SpendToHtml.Create(report);
-                                fileExtension = "html";
-                                break;
-                        }
-                        var fileName = $"{budgetName} Spend {yearMonth}.{fileExtension}";
-                        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
-                        using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-                        await stream.WriteAsync(fileBytes);
-                    });
-            },
-            budgetNameOption, categoryNameOption, yearMonthOption, outputFormatOption, ConfigFileOption.Value, new YnabClientBinder());
-
-        parentCommand.AddCommand(command);
+                        case "xlsx":
+                            fileBytes = report.ToExcel();
+                            fileExtension = "xlsx";
+                            break;
+                        default:
+                            fileBytes = report.ToHtml();
+                            fileExtension = "html";
+                            break;
+                    }
+                    var fileName = $"{budgetName} Spend {yearMonth}.{fileExtension}";
+                    var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+                    using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                    await stream.WriteAsync(fileBytes);
+                });
+        });
     }
 }

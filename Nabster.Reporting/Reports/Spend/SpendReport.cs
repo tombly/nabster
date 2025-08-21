@@ -1,16 +1,17 @@
-using Nabster.Reports.Services;
+using Nabster.Reporting.Reports.Spend.Models;
+using Nabster.Reporting.Services;
 using Ynab.Api.Client;
 using Ynab.Api.Client.Extensions;
 
-namespace Nabster.Reports.Generators;
+namespace Nabster.Reporting.Reports.Spend;
 
 /// <summary>
 /// Generates a monthly spend report for a specific category that groups and
 /// totals transactions based on prefixes in their memo text.
 /// </summary>
-public class Spend(YnabService _ynabService)
+public class SpendReport(YnabService _ynabService)
 {
-    public async Task<SpendReport> Generate(string? budgetName, string categoryName, string month)
+    public async Task<SpendReportModel> Build(string? budgetName, string categoryName, string month)
     {
         var budgetDetail = await _ynabService.Client.GetBudgetDetailAsync(budgetName);
 
@@ -59,14 +60,14 @@ public class Spend(YnabService _ynabService)
         }
 
         // Group the transactions by their memo text prefix.
-        var model = new SpendReport
+        var model = new SpendReportModel
         {
             BudgetName = budgetDetail.Name,
             MonthName = DateTime.Parse(month).ToString("MMMM yyyy"),
-            Groups = allTransactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroup
+            Groups = allTransactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroupModel
             {
                 MemoPrefix = g.Key,
-                Transactions = g.Select(t => new SpendTransaction
+                Transactions = g.Select(t => new SpendTransactionModel
                 {
                     Description = BuildDescription(g.Key, t),
                     Date = t.Date,
@@ -95,29 +96,3 @@ public class Spend(YnabService _ynabService)
         return payee;
     }
 }
-
-#region Models
-
-public class SpendReport
-{
-    public string BudgetName { get; set; } = string.Empty;
-    public string MonthName { get; set; } = string.Empty;
-    public List<SpendGroup> Groups { get; set; } = [];
-    public decimal Total => Groups.SelectMany(g => g.Transactions).Sum(t => t.Amount);
-}
-
-public class SpendGroup
-{
-    public string MemoPrefix { get; set; } = string.Empty;
-    public List<SpendTransaction> Transactions { get; set; } = [];
-    public decimal Total => Transactions.Sum(t => t.Amount);
-}
-
-public class SpendTransaction
-{
-    public string Description { get; set; } = string.Empty;
-    public DateTimeOffset Date { get; set; }
-    public decimal Amount { get; set; }
-}
-
-#endregion

@@ -2,16 +2,13 @@ using System.CommandLine;
 
 namespace Nabster.Cli.Commands;
 
-public static class ReportCommand
+internal sealed class ReportCommand : Command
 {
-    public static void AddReports(this Command parentCommand)
+    public ReportCommand(HistoricalCommand performanceCommand, PlanningCommand planningCommand, SpendCommand spendCommand)
+        : base("report", "Generates a finance report.")
     {
-        var command = new Command("report", "Generates a finance report.");
-
-        command.AddPerformance();
-        command.AddPlanning();
-        command.AddSpend();
-
-        parentCommand.AddCommand(command);
+        Subcommands.Add(performanceCommand);
+        Subcommands.Add(planningCommand);
+        Subcommands.Add(spendCommand);
     }
 }

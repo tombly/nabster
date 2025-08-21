@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Nabster.Chat.Functions.Extensions;
+using Nabster.Chat.Services;
 
 namespace Nabster.Chat.Functions;
 
-public class IncomingMessage(ILogger<IncomingMessage> _logger, ChatService _chatService)
+internal class IncomingMessage(ILogger<IncomingMessage> _logger, ChatService _chatService)
 {
     [Function("IncomingMessage")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest request)

@@ -1,11 +1,11 @@
 using System.Text;
-using Nabster.Reports.Generators;
+using Nabster.Reporting.Reports.Spend.Models;
 
-namespace Nabster.Reports.Exporters;
+namespace Nabster.Reporting.Reports.Spend;
 
 public static class SpendToHtml
 {
-    public static byte[] Create(SpendReport report)
+    public static byte[] ToHtml(this SpendReportModel report)
     {
         var html = new StringBuilder();
         html.AppendLine($"<html><head><meta charset=\"utf-8\"></head><body style=\"font-family: monospace;\">");
@@ -50,7 +50,7 @@ public static class SpendToHtml
             </style>");
     }
 
-    private static void CreateTitleRow(StringBuilder html, SpendReport report)
+    private static void CreateTitleRow(StringBuilder html, SpendReportModel report)
     {
         html.AppendLine($"<div><b>Spend Report - {report.BudgetName} - {report.MonthName}</b></div>");
         html.AppendLine("<div>&nbsp;</div>");
@@ -61,7 +61,7 @@ public static class SpendToHtml
         html.AppendLine($"<div><b>{categoryGroupName}</b></div>");
     }
 
-    private static void CreateTransactionRow(StringBuilder html, SpendTransaction transaction)
+    private static void CreateTransactionRow(StringBuilder html, SpendTransactionModel transaction)
     {
         html.AppendLine("<div class='flex-row'>");
         html.AppendLine($"<div class='flex-column-wide'>{transaction.Description}</div>");

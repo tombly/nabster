@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Nabster.Chat.Functions.Extensions;
 
-public static class HttpRequestExtensions
+internal static class HttpRequestExtensions
 {
     public static async Task<JsonNode> AsJsonNode(this HttpRequest request)
     {

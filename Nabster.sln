@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Chat.Functions", "Nabster.Chat.Functions\Nabster.Chat.Functions.csproj", "{B465C956-6676-4CA6-836A-CE599D16F562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Reports", "Nabster.Reports\Nabster.Reports.csproj", "{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Reporting", "Nabster.Reporting\Nabster.Reporting.csproj", "{9B3E4FF4-C95F-4684-8416-839ED52D7AE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nabster.Chat", "Nabster.Chat\Nabster.Chat.csproj", "{D3573200-6A59-454C-922A-B47C1742C2FC}"
 EndProject

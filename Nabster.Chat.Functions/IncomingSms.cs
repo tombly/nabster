@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Nabster.Chat.Services;
 using Twilio.Security;
 
 namespace Nabster.Chat.Functions;
 
-public class IncomingSms(ILogger<IncomingSms> _logger, ChatService _chatService)
+internal class IncomingSms(ILogger<IncomingSms> _logger, ChatService _chatService)
 {
     [Function("IncomingSms")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest request)

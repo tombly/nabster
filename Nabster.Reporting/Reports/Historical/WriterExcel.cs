@@ -1,20 +1,20 @@
-using Nabster.Reports.Extensions;
-using Nabster.Reports.Generators;
+using Nabster.Reporting.Extensions;
+using Nabster.Reporting.Reports.Historical.Models;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Nabster.Reports.Exporters;
+namespace Nabster.Reporting.Reports.Historical;
 
-public static class PerformanceToExcel
+public static class WriterExcel
 {
-    public static byte[] Create(PerformanceReport report)
+    public static byte[] ToExcel(this HistoricalReportModel report)
     {
         var workbook = new XSSFWorkbook();
         CreateSheet(workbook, report.AccountGroups);
         return workbook.ToByteArray();
     }
 
-    private static ISheet CreateSheet(XSSFWorkbook workbook, List<PerformanceAccountGroup> accountGroups)
+    private static ISheet CreateSheet(XSSFWorkbook workbook, List<HistoricalAccountGroupModel> accountGroups)
     {
         var sheet = workbook.CreateSheet("Performance");
 
