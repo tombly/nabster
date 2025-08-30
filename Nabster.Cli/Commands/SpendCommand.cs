@@ -9,27 +9,11 @@ internal sealed class SpendCommand : Command
     public SpendCommand(IAnsiConsole ansiConsole, SpendReport spendReport)
         : base("spend", "Generate a spend report for a budget category.")
     {
-        Options.Add(new Option<string>("--budget-name")
-        {
-            Description = "The name of the budget to generate the report for."
-        });
-
-        Options.Add(new Option<string>("--output-format")
-        {
-            Description = "The output file type, xlsx or html (default)."
-        });
-
-        Options.Add(new Option<string>("--category-name")
-        {
-            Description = "The name of the category to generate the report for.",
-            Required = true
-        });
-
-        Options.Add(new Option<string>("--month")
-        {
-            Description = "The year and month to generate the report for, e.g.: 2025-08",
-            Required = true
-        });
+        Options.Add(new Option<string>("--budget-name") { Description = "The name of the budget to generate the report for." });
+        Options.Add(new Option<string>("--output-format") { Description = "The output file type, xlsx or html (default)." });
+        Options.Add(new Option<string>("--category-name") { Description = "The name of the category to generate the report for.", Required = true });
+        Options.Add(new Option<string>("--month") { Description = "The year and month to generate the report for, e.g.: 2025-08", Required = true });
+        Options.Add(new Option<bool>("--demo") { Description = "Generate a demo report." });
 
         SetAction(async parseResult =>
         {
@@ -39,8 +23,9 @@ internal sealed class SpendCommand : Command
                     var outputFormat = parseResult.GetValue<string>("--output-format") ?? "html";
                     var categoryName = parseResult.GetValue<string>("--category-name");
                     var yearMonth = parseResult.GetValue<string>("--month");
+                    var isDemo = parseResult.GetValue<bool>("--demo");
 
-                    var report = await spendReport.Build(budgetName, categoryName!, yearMonth!);
+                    var report = await spendReport.Build(budgetName, categoryName!, yearMonth!, isDemo);
 
                     byte[] fileBytes;
                     string fileExtension;

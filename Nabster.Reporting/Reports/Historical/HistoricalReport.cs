@@ -10,12 +10,14 @@ namespace Nabster.Reporting.Reports.Historical;
 /// includes an Excel spreadsheet with the data and a (self-contained) HTML
 /// file with charts.
 /// </summary>
-public class HistoricalReport(YnabService _ynabService)
+public class HistoricalReport(IEnumerable<IYnabService> _ynabServices)
 {
-    public async Task<HistoricalReportModel> Build(string? budgetName)
+    public async Task<HistoricalReportModel> Build(string? budgetName, bool isDemo)
     {
-        var budgetDetail = await _ynabService.Client.GetBudgetDetailAsync(budgetName);
-        var accounts = (await _ynabService.Client.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
+        var ynabService = _ynabServices.Single(s => s.IsDemo == isDemo)!;
+
+        var budgetDetail = await ynabService.Client.GetBudgetDetailAsync(budgetName);
+        var accounts = (await ynabService.Client.GetAccountsAsync(budgetDetail.Id.ToString(), null)!).Data.Accounts.Where(a => !a.Closed);
 
         // Create our list of account name prefixes that we'll group the
         // accounts by.
@@ -41,7 +43,7 @@ public class HistoricalReport(YnabService _ynabService)
         };
 
         // Get all the transactions.
-        var transactions = (await _ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
+        var transactions = (await ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
 
         foreach (var account in accounts)
         {

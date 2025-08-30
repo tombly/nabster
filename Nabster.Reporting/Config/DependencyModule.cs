@@ -7,7 +7,7 @@ using Nabster.Reporting.Services;
 namespace Nabster.Reporting.Config;
 
 /// <summary>
-/// Registers necessary services for the Report feature.
+/// Registers necessary services for the Reporting feature.
 /// </summary>
 public static class DependencyModule
 {
@@ -15,7 +15,8 @@ public static class DependencyModule
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddTransient<YnabService>();
+        services.AddTransient<IYnabService, YnabServiceMock>();
+        services.AddTransient<IYnabService, YnabService>();
         services.AddTransient<HistoricalReport>();
         services.AddTransient<PlanningReport>();
         services.AddTransient<SpendReport>();

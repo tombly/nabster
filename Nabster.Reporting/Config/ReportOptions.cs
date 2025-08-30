@@ -1,7 +1,7 @@
 namespace Nabster.Reporting.Config;
 
 /// <summary>
-/// Describes the configuration options required by the Report service.
+/// Describes the configuration options required by the Reporting feature.
 /// </summary>
 public class ReportOptions
 {

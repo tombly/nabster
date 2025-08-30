@@ -8,9 +8,11 @@ namespace Nabster.Reporting.Services;
 /// <summary>
 /// A DI-friendly wrapper around <see cref="YnabApiClient"/>.
 /// </summary>
-public class YnabService
+public class YnabService : IYnabService
 {
-    public YnabApiClient Client { get; private set; }
+    public IYnabApiClient Client { get; private set; }
+
+    public bool IsDemo { get; private set; } = false;
 
     public YnabService(IOptions<ReportOptions> options)
     {

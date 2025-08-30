@@ -15,9 +15,7 @@ public class YnabService
     public YnabService(IOptions<ChatOptions> options)
     {
         if (options.Value.YnabAccessToken == null)
-        {
             throw new InvalidOperationException("YnabAccessToken is not set in ChatOptions.");
-        }
 
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.Value.YnabAccessToken);

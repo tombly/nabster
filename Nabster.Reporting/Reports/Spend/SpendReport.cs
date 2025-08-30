@@ -9,16 +9,18 @@ namespace Nabster.Reporting.Reports.Spend;
 /// Generates a monthly spend report for a specific category that groups and
 /// totals transactions based on prefixes in their memo text.
 /// </summary>
-public class SpendReport(YnabService _ynabService)
+public class SpendReport(IEnumerable<IYnabService> _ynabServices)
 {
-    public async Task<SpendReportModel> Build(string? budgetName, string categoryName, string month)
+    public async Task<SpendReportModel> Build(string? budgetName, string categoryName, string month, bool isDemo)
     {
-        var budgetDetail = await _ynabService.Client.GetBudgetDetailAsync(budgetName);
+        var ynabService = _ynabServices.Single(s => s.IsDemo == isDemo)!;
+        
+        var budgetDetail = await ynabService.Client.GetBudgetDetailAsync(budgetName);
 
         // Get all the transactions for the current month for the given category.
         var categoryId = budgetDetail.Categories!.FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.InvariantCultureIgnoreCase))?.Id;
         var startOfMonth = new DateTimeOffset(DateTime.Parse(month).Year, DateTime.Parse(month).Month, 1, 0, 0, 0, TimeSpan.Zero);
-        var transactions = (await _ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), startOfMonth, null, null)).Data.Transactions;
+        var transactions = (await ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), startOfMonth, null, null)).Data.Transactions;
 
         // Flatten subtransactions into the main transaction list.
         var allTransactions = new List<TransactionDetail>();

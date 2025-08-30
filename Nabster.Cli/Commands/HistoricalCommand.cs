@@ -11,6 +11,7 @@ internal sealed class HistoricalCommand : Command
     {
         Options.Add(new Option<string>("--budget-name") { Description = "The name of the budget to generate the report for." });
         Options.Add(new Option<string>("--output-format") { Description = "The output file type, xlsx or html (default)." });
+        Options.Add(new Option<bool>("--demo") { Description = "Generate a demo report." });
 
         SetAction(async parseResult =>
         {
@@ -18,8 +19,9 @@ internal sealed class HistoricalCommand : Command
                 {
                     var budgetName = parseResult.GetValue<string>("--budget-name");
                     var outputFormat = parseResult.GetValue<string>("--output-format") ?? "html";
+                    var isDemo = parseResult.GetValue<bool>("--demo");
 
-                    var report = await historicalReport.Build(budgetName);
+                    var report = await historicalReport.Build(budgetName, isDemo);
 
                     byte[] fileBytes;
                     string fileExtension;

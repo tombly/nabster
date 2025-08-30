@@ -9,11 +9,13 @@ namespace Nabster.Reporting.Reports.Planning;
 /// annually, etc.) recurring goals are supported, as well as non-recurring
 /// goals.
 /// </summary>
-public class PlanningReport(YnabService _ynabService)
+public class PlanningReport(IEnumerable<IYnabService> _ynabServices)
 {
-    public async Task<PlanningReportModel> Build(string? budgetName)
+    public async Task<PlanningReportModel> Build(string? budgetName, bool isDemo)
     {
-        var budgetDetail = await _ynabService.Client.GetBudgetDetailAsync(budgetName);
+        var ynabService = _ynabServices.Single(s => s.IsDemo == isDemo)!;
+
+        var budgetDetail = await ynabService.Client.GetBudgetDetailAsync(budgetName);
 
         // The categories don't have their group name property set automatically
         // (but they're returned in a separate collection) so we patch them here.
