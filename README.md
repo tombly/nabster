@@ -1,40 +1,58 @@
 # nabster
-An app for analyzing and reporting on your financial data in [YNAB](https://www.youneedabudget.com) written in C# and built on Azure.
+An app for analyzing and reporting on your personal finances in [YNAB](https://www.youneedabudget.com) written in C# and built on Azure. There are two features:
+- An AI chatbot with integrated SMS that can answer questions about your financial data in YNAB.
 
-## What it does
+- A suite of reports for historical account balances, monthly spending, and budget planning.
 
-This app generates different kinds of financial reports that are useful in budgeting and planning. The reports are delivered as Excel spreadsheets, web pages, or are pushed directly to users via SMS.
+## Design
 
-### Category Activity Report
+Users interact with Nabster via the CLI or SMS. To generate reports, the user uses the CLI. To chat, the user can use either the CLI or SMS. When the user requests a report from the CLI, it retrieves the user's financial data from the YNAB API, generates the report, and then exports it to the user's desktop as an Excel spreadsheet or self-contained HTML file.
 
-This simple report sends an SMS with the activity for a specific category for the current month.
+When the user asks a question via the CLI, the prompt is forwarded to OpenAI which queries the YNAB API for the necessary financial data and then returns the answer via the console or SMS. When the user asks a question via SMS, Twilio calls a web hook that is handled by a function app which then forwards the prompt to OpenAI which queries the YNAB API and then calls back to Twilio to send the answer to the user.
 
-### Performance Report
+![Design](Images/design.svg)
 
-This report shows the performance of your accounts over the past year. It takes a list of account groups as input and for each group, shows a timeseries line chart of the total value of each group. The output is a self-contained HTML file with inline SVG charts.
+All secrets are stored in a key vault. The function app and logic app use system-assigned managed identities to authenticate with the key vault. The CLI uses the default Azure credential to authenticate with the key vault. Similarly, when running the function app locally, it also uses the default Azure credential to access the key vault. Both the function app and logic app use a consumption plan to minimize costs.
+
+## Code structure
+
+The code is organized into four projects:
+
+- Nabster.Chat - uses Semantic Kernel backed by OpenAI with a plug-in that allows it to call the YNAB API to answer questions about the user's financial data with responses sent via SMS. This is used by both the function app and the CLI.
+
+- Nabster.Chat.Functions - a wrapper around Nabster.Chat that implements Twilio web hooks allowing users to submit questions via SMS.
+
+- Nabster.Reporting - a set of report generators that retrieve data from the YNAB API and generate reports in HTML or Excel.
+
+- Nabster.Cli - a command-line interface to both the chat and reporting features.
+
+## Reports
+
+### Historical Report
+
+This report uses charts to visualize your account balances over the past year. It takes a list of account groups as input and for each group, shows a timeseries line chart of the total value of each group. The output is a self-contained HTML file with inline SVG charts.
+
+This report is especially useful to visualize the performance of groups of investments, such as for retirement or college.
 
 The typical use case for this is to group your investment accounts in various ways and then visualize their performance over time.
 
+![Historical Report Sample](Images/report-sample-historical.jpg)
+
 ### Planning Report
 
-This report lists each budget category along with any goal information and its monthly cost. The purpose is to figure out for each category what the typical monthly cost is over the long term, not at a specific point in time (which is what YNAB's website is really good at). This can then be used for long-term cash flow planning.
+This report lists each budget category along with any goals and the yearly and monthly cost for each. The purpose is to figure out for each category what the typical monthly cost is over the long term, not at a specific point in time (which is what YNAB's website is really good at). This can then be used for long-term cash flow planning.
 
-If a category has repeating target then the monthly cost is calculated directly from that. For example, if the target is $120 annually then the monthly cost is calculated as $10 (even if this year you've already funded the full amount).
+If a category has a repeating target then the monthly cost is calculated directly from that. For example, if the target is $120 annually then the monthly cost is calculated as $10 (even if this year you've already funded the full amount).
 
-If a category does not have a repeating target then we still want to capture it in the report so we calculate the monthly cost based on the remaining time and money needed to reach the target. For example, if the target is $600 by June 1st and the report is generated in January, and half has already been funded at that point, then the monthly cost is (($600 - $300) / 6) = $50. This differs from how the repeating targets are calculated (which ignore how much as been funded) but its more accurate for these sorts of one-off goals.
+It generates the report and saves it as either an Excel spreadsheet or self-contained HTML file to your desktop. Here's what it looks like:
 
-It generates the report and saves it as an Excel file to your Desktop. Here's what it looks like:
-
-| CategoryGroup | Category | GoalCadence | GoalDay | GoalTarget | MonthlyCost | GoalPctComplete |
-|-------------------|----------|-------------|---------|------------|-------------|------------------------|
-| Fixed Monthly | Mortgage | Monthly | 3rd | $400.00 | $400.00 | 100% |
-| Fixed Yearly | Car Registration | Yearly | Feb-28 | $500.00 | $41.67 | 100% |
-| Goals | Vacation | None | Jun-15 | $1000.00 | $150.00 | 30% |
-...
+![Planning Report Sample](Images/report-sample-planning.jpg)
 
 ### Spend Report
 
 This report lists all transactions for a specific category and month. The transactions are grouped by the memo field. This is particularly useful if you have one category for your discretionary spending, but still want to be able to sub-categorize your spending.
+
+![Spend Report Sample](Images/report-sample-spend.jpg)
 
 ## How to use
 Clone the repo and open up the folder (I use VS Code for Mac with the C# Dev Kit, Azure, and Function App extensions).
@@ -57,6 +75,8 @@ The function app can also be run locally and supports debugging with breakpoints
 
 Run the app via VS Code or directly via the command line.
 
-## How it works
+## License
 
-The reports are generated by an Azure Function that is called by the console app for on-demand reports and by a logic app for scheduled reports. All secrets are stored in a key vault. The function app and logic app use system-assigned managed identities to authenticate with the key vault. The CLI uses the default credential to authenticate with the key vault to obtain the necessary secrets to run the function app. Similarly, when running the function app locally, it also uses the default credential to access the key vault. Both the function app and logic app use a consumption plan so the app costs about $10/mo.
+Copyright (c) 2025 Tom Bulatewicz
+
+Licensed under the MIT license
