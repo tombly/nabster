@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -10,8 +10,8 @@
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
     <PackageReference Include="OxyPlot.Core" Version="2.2.0" />
-    <PackageReference Include="Ynab.Api.Client" Version="1.73.0" />
-    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.4" />
+    <PackageReference Include="Ynab.Api.Client" Version="1.73.1" />
+    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.5" />
   </ItemGroup>
 
 </Project>
