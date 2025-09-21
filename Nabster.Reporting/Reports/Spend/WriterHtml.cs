@@ -5,8 +5,13 @@ namespace Nabster.Reporting.Reports.Spend;
 
 public static class SpendToHtml
 {
+    // Tracks the row index for alternating background colors.
+    private static int _rowIndex = 0;
+
     public static byte[] ToHtml(this SpendReportModel report)
     {
+        _rowIndex = 0;
+
         var html = new StringBuilder();
         html.AppendLine($"<html><head><meta charset=\"utf-8\"></head><body style=\"font-family: monospace;\">");
 
@@ -36,12 +41,12 @@ public static class SpendToHtml
 
                 .flex-column {
                     flex: 0 0 110px;
-                    border-bottom: 1px solid #dddddd;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0);
                 }
 
                 .flex-column-wide {
                     flex: 0 0 450px;
-                    border-bottom: 1px solid #dddddd;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0);
                 }
 
                 .no-underline {
@@ -63,7 +68,8 @@ public static class SpendToHtml
 
     private static void CreateTransactionRow(StringBuilder html, SpendTransactionModel transaction)
     {
-        html.AppendLine("<div class='flex-row'>");
+        var bgColor = (_rowIndex++ % 2 == 0) ? "#f6f6f6" : "#ffffff";
+        html.AppendLine($"<div class='flex-row' style='background-color: {bgColor};'>");
         html.AppendLine($"<div class='flex-column-wide'>{transaction.Description}</div>");
         html.AppendLine($"<div class='flex-column'>{transaction.Date.DateTime.ToShortDateString()}</div>");
         html.AppendLine($"<div class='flex-column'>{transaction.Amount:C}</div>");

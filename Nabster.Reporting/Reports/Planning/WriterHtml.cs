@@ -5,8 +5,13 @@ namespace Nabster.Reporting.Reports.Planning;
 
 public static class PlanningToHtml
 {
+    // Tracks the row index for alternating background colors.
+    private static int _rowIndex = 0;
+
     public static byte[] ToHtml(this PlanningReportModel report)
     {
+        _rowIndex = 0;
+
         var html = new StringBuilder();
         html.AppendLine($"<html><head><meta charset=\"utf-8\"></head><body style=\"font-family: monospace;\">");
 
@@ -36,12 +41,12 @@ public static class PlanningToHtml
 
                 .flex-column {
                     flex: 0 0 100px;
-                    border-bottom: 1px solid #dddddd;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0);
                 }
 
                 .flex-column-wide {
                     flex: 0 0 350px;
-                    border-bottom: 1px solid #dddddd;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0);
                 }
 
                 .no-underline {
@@ -73,7 +78,8 @@ public static class PlanningToHtml
 
     private static void CreateCategoryRow(StringBuilder html, PlanningCategoryModel category)
     {
-        html.AppendLine("<div class='flex-row'>");
+        var bgColor = (_rowIndex++ % 2 == 0) ? "#f6f6f6" : "#ffffff";
+        html.AppendLine($"<div class='flex-row' style='background-color: {bgColor};'>");
         html.AppendLine($"<div class='flex-column-wide'>{category.CategoryName}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalCadence}</div>");
         html.AppendLine($"<div class='flex-column'>{category.GoalDay}</div>");
