@@ -17,7 +17,7 @@
     <PackageReference Include="spectre.console" Version="0.50.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-rc.2.25416.105" />
     <PackageReference Include="Ynab.Api.Client" Version="1.73.1" />
-    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.5" />
+    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.6" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.63.0" />
   </ItemGroup>
 

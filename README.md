@@ -57,9 +57,9 @@ This report lists all transactions for a specific category and month. The transa
 ## How to use
 Clone the repo and open up the folder (I use VS Code for Mac with the C# Dev Kit, Azure, and Function App extensions).
 
-**1. Edit the configuration files**
+**1. Customize the infrastructure**
 
-Edit the `Deployments/infra.bicepparam` file to add your YNAB personal access token, Twilio credentials, and your YNAB budget info. If you want to run the CLI via VS Code, then edit the `.vscode/launch.json` to adjust the parameters for your YNAB budget info.
+Edit the `Deployments/infra.bicepparam` file to name the Azure resources that will be created and add your YNAB personal access token, Twilio credentials, and OpenAI endpoint.
 
 **2. Deploy the infrastructure**
 
@@ -71,9 +71,24 @@ cd Deployments
 
 The function app can also be run locally and supports debugging with breakpoints.
 
-**3. Run the CLI**
+**3. Add a config file for the CLI:**
 
-Run the app via VS Code or directly via the command line.
+Create a new file called `config.json` inside the `Nabster.Cli` folder and set the URLs based on the names of your Azure resources.
+
+```json
+{
+    "Urls":
+    {
+        "KeyVaultUrl": "https://mynabster-keyvault.vault.azure.net",
+        "OpenAiUrl": "https://mynabster-openai.openai.azure.com",
+        "FunctionAppUrl": "https://mynabster-functionapp.azurewebsites.net/api/IncomingMessage"
+    }
+}
+```
+
+**4. Run the CLI**
+
+If you want to run the CLI via VS Code then edit the `.vscode/launch.json` to adjust the parameters.
 
 ## License
 

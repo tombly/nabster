@@ -13,6 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.63.0" />
     <PackageReference Include="Ynab.Api.Client" Version="1.73.1" />
-    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.5" />
+    <PackageReference Include="Ynab.Api.Client.Extensions" Version="1.73.6" />
 </ItemGroup>
 </Project>
