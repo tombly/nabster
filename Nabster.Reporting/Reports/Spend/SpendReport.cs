@@ -65,6 +65,7 @@ public class SpendReport(IEnumerable<IYnabService> _ynabServices)
         var model = new SpendReportModel
         {
             BudgetName = budgetDetail.Name,
+            CategoryName = categoryName,
             MonthName = DateTime.Parse(month).ToString("MMMM yyyy"),
             Groups = allTransactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroupModel
             {

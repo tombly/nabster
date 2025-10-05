@@ -57,7 +57,7 @@ public static class SpendToHtml
 
     private static void CreateTitleRow(StringBuilder html, SpendReportModel report)
     {
-        html.AppendLine($"<div><b>Spend Report - {report.BudgetName} - {report.MonthName}</b></div>");
+        html.AppendLine($"<div><b>Spend Report - {report.BudgetName} - {report.CategoryName} - {report.MonthName}</b></div>");
         html.AppendLine("<div>&nbsp;</div>");
     }
 

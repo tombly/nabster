@@ -40,7 +40,7 @@ internal sealed class SpendCommand : Command
                             fileExtension = "html";
                             break;
                     }
-                    var fileName = $"{budgetName} Spend {yearMonth}.{fileExtension}";
+                    var fileName = $"Spend - {categoryName} - {yearMonth}.{fileExtension}";
                     var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
                     using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                     await stream.WriteAsync(fileBytes);
