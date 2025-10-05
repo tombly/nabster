@@ -41,7 +41,7 @@
                 "--category-name",
                 "Discretionary",
                 "--month",
-                "2025-08"
+                "2025-09"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
@@ -63,7 +63,7 @@
                 "chat",
                 "direct",
                 "--message",
-                "What is the Activity of the Discretionary category, both the dollar amount and percentage of monthly need? Answer in the format 'Category Name: activity dollar amount (percentage)'"
+                "What is the Activity of the Discretionary category, both the dollar amount and percentage of monthly need? Answer in the format 'Category Name: activity dollar amount (percentage)'. Do the same for the Groceries category. For the Unplanned category, just give the activity."
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
