@@ -402,3 +402,14 @@ FodyWeavers.xsd
 Deployments/infra.local.bicepparam
 
 Nabster.Cli/config.json
+
+# Azurite (Azure Storage Emulator)
+__azurite_db_blob__.json
+__azurite_db_blob_extent__.json
+__azurite_db_queue__.json
+__azurite_db_queue_extent__.json
+__azurite_db_table__.json
+__azurite_db_table_extent__.json
+__blobstorage__/
+__queuestorage__/
+__tablestorage__/
