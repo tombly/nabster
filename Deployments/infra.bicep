@@ -157,6 +157,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   properties: {
     supportsHttpsTrafficOnly: true
     defaultToOAuthAuthentication: true
+    minimumTlsVersion: 'TLS1_2'
   }
 }
 
