@@ -8,6 +8,16 @@ public static class SpendToHtml
     // Tracks the row index for alternating background colors.
     private static int _rowIndex = 0;
 
+    /// <summary>
+    /// Formats currency with parentheses for negative values.
+    /// </summary>
+    private static string FormatCurrency(decimal amount)
+    {
+        return amount < 0 
+            ? $"({Math.Abs(amount):C})" 
+            : $"{amount:C}&nbsp;";
+    }
+
     public static byte[] ToHtml(this SpendReportModel report)
     {
         _rowIndex = 0;
@@ -49,6 +59,12 @@ public static class SpendToHtml
                     border-bottom: 1px solid rgba(255, 255, 255, 0);
                 }
 
+                .flex-column-right {
+                    flex: 0 0 110px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0);
+                    text-align: right;
+                }
+
                 .no-underline {
                     border: none;
                 }
@@ -72,7 +88,7 @@ public static class SpendToHtml
         html.AppendLine($"<div class='flex-row' style='background-color: {bgColor};'>");
         html.AppendLine($"<div class='flex-column-wide'>{transaction.Description}</div>");
         html.AppendLine($"<div class='flex-column'>{transaction.Date.DateTime.ToShortDateString()}</div>");
-        html.AppendLine($"<div class='flex-column'>{transaction.Amount:C}</div>");
+        html.AppendLine($"<div class='flex-column-right'>{FormatCurrency(transaction.Amount)}</div>");
         html.AppendLine("</div>");
     }
 
@@ -81,7 +97,7 @@ public static class SpendToHtml
         html.AppendLine("<div class='flex-row'>");
         html.AppendLine($"<div class='flex-column-wide no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'><b>Total</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{total:C}</b></div>");
+        html.AppendLine($"<div class='flex-column-right no-underline'><b>{FormatCurrency(total)}</b></div>");
         html.AppendLine("</div>");
     }
 
@@ -91,7 +107,7 @@ public static class SpendToHtml
         html.AppendLine("<div class='flex-row'>");
         html.AppendLine($"<div class='flex-column-wide no-underline'></div>");
         html.AppendLine($"<div class='flex-column no-underline'><b>Report Total</b></div>");
-        html.AppendLine($"<div class='flex-column no-underline'><b>{total:C}</b></div>");
+        html.AppendLine($"<div class='flex-column-right no-underline'><b>{FormatCurrency(total)}</b></div>");
         html.AppendLine("</div>");
     }
 }
