@@ -51,7 +51,7 @@ This report lists all transactions for a specific category and month. The transa
 ## Build and test commands
 
 ### Prerequisites
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - Azure CLI (for Key Vault access)
 - Azure Functions Core Tools (for local function development)
 
@@ -140,7 +140,7 @@ Current testing is performed manually using:
 ## Code style guidelines
 
 ### General Principles
-- **Target Framework:** .NET 9.0 with C# 13 features
+- **Target Framework:** .NET 10.0 with C# 13 features
 - **Nullable Reference Types:** Enabled across all projects
 - **Implicit Usings:** Enabled for cleaner code
 - **Code Analysis:** Follow Microsoft's recommended analyzer rules
