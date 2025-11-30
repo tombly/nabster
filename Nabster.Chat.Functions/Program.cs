@@ -48,6 +48,7 @@ var host = new HostBuilder()
         });
         services.Configure<ChatOptions>(settings.Configuration.GetSection(ChatOptions.Section));
 
+        services.AddHttpClient();
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         services.AddNabsterChat();
