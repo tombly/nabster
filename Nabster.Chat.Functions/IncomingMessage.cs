@@ -17,16 +17,21 @@ internal class IncomingMessage(ILogger<IncomingMessage> _logger, ChatService _ch
         var json = await request.AsJsonNode();
         var message = json.GetRequiredStringValue("message");
         var phoneNumber = json.GetOptionalStringValue("from");
+        var emailAddress = json.GetOptionalStringValue("fromEmailAddress");
+
+        if (emailAddress is not null)
+        {
+            await _chatService.ReplyViaEmail(message, emailAddress, _logger);
+            return new NoContentResult();
+        }
 
         if (phoneNumber is not null)
         {
             await _chatService.ReplyViaSms(message, phoneNumber, _logger);
             return new NoContentResult();
         }
-        else
-        {
-            var response = await _chatService.Reply(message, _logger);
-            return new OkObjectResult(response);
-        }
+
+        var response = await _chatService.Reply(message, _logger);
+        return new OkObjectResult(response);
     }
 }

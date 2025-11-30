@@ -10,7 +10,7 @@ namespace Nabster.Chat.Services;
 /// <summary>
 /// Provides answers to questions about a user's personal finances in YNAB.
 /// </summary>
-public class ChatService(ChatCompletionService _chatCompletionService, YnabService _ynabService, SmsService _smsService)
+public class ChatService(ChatCompletionService _chatCompletionService, YnabService _ynabService, SmsService _smsService, EmailService _emailService)
 {
     public async Task<string> Reply(string message, ILogger logger)
     {
@@ -61,5 +61,11 @@ public class ChatService(ChatCompletionService _chatCompletionService, YnabServi
     {
         var response = await Reply(message, logger);
         _smsService.Send(phoneNumber, response);
+    }
+
+    public async Task ReplyViaEmail(string message, string emailAddress, ILogger logger)
+    {
+        var response = await Reply(message, logger);
+        await _emailService.Send(emailAddress, response);
     }
 }

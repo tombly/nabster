@@ -18,6 +18,8 @@ Environment.SetEnvironmentVariable("YNAB_ACCESS_TOKEN", client.GetSecret("YnabAc
 Environment.SetEnvironmentVariable("TWILIO_ACCOUNT_SID", client.GetSecret("TwilioAccountSid").Value.Value);
 Environment.SetEnvironmentVariable("TWILIO_AUTH_TOKEN", client.GetSecret("TwilioAuthToken").Value.Value);
 Environment.SetEnvironmentVariable("TWILIO_PHONE_NUMBER", client.GetSecret("TwilioPhoneNumber").Value.Value);
+Environment.SetEnvironmentVariable("SMTP2GO_API_KEY", client.GetSecret("Smtp2GoApiKey").Value.Value);
+Environment.SetEnvironmentVariable("SMTP2GO_EMAIL_ADDRESS", client.GetSecret("Smtp2GoEmailAddress").Value.Value);
 
 #endif
 
@@ -30,6 +32,8 @@ var host = new HostBuilder()
         var twilioPhoneNumber = Environment.GetEnvironmentVariable("TWILIO_PHONE_NUMBER") ?? throw new Exception("TWILIO_PHONE_NUMBER not set");
         var twilioAccountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID") ?? throw new Exception("TWILIO_ACCOUNT_SID not set");
         var twilioAuthToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN") ?? throw new Exception("TWILIO_AUTH_TOKEN not set");
+        var smtp2GoApiKey = Environment.GetEnvironmentVariable("SMTP2GO_API_KEY") ?? throw new Exception("SMTP2GO_API_KEY not set");
+        var smtp2GoEmailAddress = Environment.GetEnvironmentVariable("SMTP2GO_EMAIL_ADDRESS") ?? throw new Exception("SMTP2GO_EMAIL_ADDRESS not set");
 
         var settings = new HostApplicationBuilderSettings { Configuration = new ConfigurationManager() };
         settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -39,9 +43,12 @@ var host = new HostBuilder()
             ["Chat:TwilioAccountSid"] = twilioAccountSid,
             ["Chat:TwilioAuthToken"] = twilioAuthToken,
             ["Chat:TwilioPhoneNumber"] = twilioPhoneNumber,
+            ["Chat:Smtp2GoApiKey"] = smtp2GoApiKey,
+            ["Chat:Smtp2GoEmailAddress"] = smtp2GoEmailAddress
         });
         services.Configure<ChatOptions>(settings.Configuration.GetSection(ChatOptions.Section));
 
+        services.AddHttpClient();
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         services.AddNabsterChat();

@@ -14,6 +14,7 @@ public static class DependencyModule
 
         services.AddTransient<ChatService>();
         services.AddTransient<SmsService>();
+        services.AddTransient<EmailService>();
         services.AddTransient<ChatCompletionService>();
         services.AddTransient<YnabService>();
 

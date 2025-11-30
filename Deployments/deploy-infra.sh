@@ -26,6 +26,8 @@ az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee
 az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $func_identity_id --scope $scope_prefix/TwilioAccountSid
 az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $func_identity_id --scope $scope_prefix/TwilioAuthToken
 az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $func_identity_id --scope $scope_prefix/TwilioPhoneNumber
+az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $func_identity_id --scope $scope_prefix/Smtp2GoApiKey
+az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $func_identity_id --scope $scope_prefix/Smtp2GoEmailAddress
 
 logic_identity_id=$(az resource show --name $logic_app --resource-group $resource_group --resource-type "Microsoft.Logic/workflows" --query "identity.principalId" -o tsv)
 az role assignment create --role 4633458b-17de-408a-b874-0445c86b69e6 --assignee $logic_identity_id --scope $scope_prefix/FunctionAppKey

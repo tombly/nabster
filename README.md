@@ -26,6 +26,8 @@ The code is organized into four projects:
 
 - Nabster.Cli - a command-line interface to both the chat and reporting features.
 
+- Nabster.Mcp - an MCP server that allows agents to retrieve budget and account data from the YNAB API.
+
 ## Reports
 
 ### Historical Report
