@@ -12,4 +12,6 @@ public class ChatOptions
     public string TwilioAccountSid { get; set; } = string.Empty;
     public string TwilioAuthToken { get; set; } = string.Empty;
     public string TwilioPhoneNumber { get; set; } = string.Empty;
+    public string Smtp2GoApiKey { get; set; } = string.Empty;
+    public string Smtp2GoEmailAddress { get; set; } = string.Empty;
 }

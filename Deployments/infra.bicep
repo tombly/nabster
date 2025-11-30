@@ -31,14 +31,17 @@ param twilioAuthToken string
 @secure()
 param twilioPhoneNumber string
 
-@description('The (optional) budget name to send to the function (used by logic app).')
-param budget string = ''
+@secure()
+param smtp2GoApiKey string
+
+@secure()
+param smtp2GoEmailAddress string
 
 @description('The message to send to the function (used by logic app).')
 param message string
 
-@description('The phone number to send to the function (used by logic app).')
-param toPhone string
+@description('The email addresses to send to the function (used by logic app).')
+param toEmailAddress string
 
 resource openAIAccount 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
   name: openAIAccountName
@@ -125,6 +128,14 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'TWILIO_PHONE_NUMBER'
           value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=TwilioPhoneNumber)'
+        }
+        {
+          name: 'SMTP2GO_API_KEY'
+          value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=Smtp2GoApiKey)'
+        }
+        {
+          name: 'SMTP2GO_EMAIL_ADDRESS'
+          value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=Smtp2GoEmailAddress)'
         }
         {
           name: 'OPENAI_URL'
@@ -250,6 +261,34 @@ resource vaultSecretTwilioPhoneNumber 'Microsoft.KeyVault/vaults/secrets@2023-07
   }
 }
 
+resource vaultSecretSmtp2goApiKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: vault
+  name: 'Smtp2GoApiKey'
+  tags: {
+    'file-encoding': 'utf-8'
+  }
+  properties: {
+    attributes: {
+      enabled: true
+    }
+    value: smtp2GoApiKey
+  }
+}
+
+resource vaultSecretSmtp2GoEmailAddress 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: vault
+  name: 'Smtp2GoEmailAddress'
+  tags: {
+    'file-encoding': 'utf-8'
+  }
+  properties: {
+    attributes: {
+      enabled: true
+    }
+    value: smtp2GoEmailAddress
+  }
+}
+
 resource vaultSecretYnabAccessToken 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: vault
   name: 'YnabAccessToken'
@@ -355,9 +394,8 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
               'x-functions-key': '@{body(\'Get_secret\')?[\'value\']}'
             }
             body: {
-              budget: budget
               message: message
-              from: toPhone
+              fromEmailAddress: toEmailAddress
             }
           }
           runtimeConfiguration: {
