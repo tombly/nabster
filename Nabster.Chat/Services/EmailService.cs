@@ -41,7 +41,7 @@ public class EmailService(IOptions<ChatOptions> chatOptions, IHttpClientFactory 
             Content = new StringContent(body, Encoding.UTF8, "application/json")
         };
         request.Headers.Add("X-Smtp2go-Api-Key", _smtp2GoApiKey);
-        using var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = _httpClientFactory.CreateClient();
         var response = await httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
