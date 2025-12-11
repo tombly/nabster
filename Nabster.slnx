@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="Nabster.Chat.Functions\Nabster.Chat.Functions.csproj" Type="C#" />
+  <Project Path="Nabster.Reporting\Nabster.Reporting.csproj" Type="C#" />
+  <Project Path="Nabster.Chat\Nabster.Chat.csproj" Type="C#" />
+  <Project Path="Nabster.Cli\Nabster.Cli.csproj" Type="C#" />
+  <Project Path="Nabster.Mcp\Nabster.Mcp.csproj" Type="C#" />
+  <Properties Name="Configuration">
+    <Property Name="Debug|Any CPU" />
+    <Property Name="Debug|x64" />
+    <Property Name="Debug|x86" />
+    <Property Name="Release|Any CPU" />
+    <Property Name="Release|x64" />
+    <Property Name="Release|x86" />
+  </Properties>
+</Solution>
