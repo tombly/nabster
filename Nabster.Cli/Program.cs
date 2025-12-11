@@ -51,6 +51,7 @@ public static class Program
         builder.Services.Configure<FunctionOptions>(builder.Configuration.GetSection(FunctionOptions.Section));
 
         // Inject feature services.
+        builder.Services.AddHttpClient();
         builder.Services.AddNabsterChat();
         builder.Services.AddNabsterReports();
 
