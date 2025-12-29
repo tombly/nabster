@@ -29,7 +29,7 @@
     <PackageVersion Include="Microsoft.SemanticKernel" Version="1.68.0" />
     
     <!-- Communication packages -->
-    <PackageVersion Include="Twilio" Version="7.13.8" />
+    <PackageVersion Include="Twilio" Version="7.14.0" />
     
     <!-- Reporting packages -->
     <PackageVersion Include="DotNetCore.NPOI" Version="1.2.3" />
