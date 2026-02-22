@@ -61,9 +61,11 @@ public static class Program
         builder.Services.AddTransient<FuncCommand>();
         builder.Services.AddTransient<DirectCommand>();
         builder.Services.AddTransient<ReportCommand>();
+        builder.Services.AddTransient<UtilityCommand>();
         builder.Services.AddTransient<HistoricalCommand>();
         builder.Services.AddTransient<PlanningCommand>();
         builder.Services.AddTransient<SpendCommand>();
+        builder.Services.AddTransient<MemoCommand>();
 
         return builder.Build();
     }

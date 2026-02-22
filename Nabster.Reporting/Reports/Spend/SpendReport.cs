@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Nabster.Reporting.Reports.Spend.Models;
 using Nabster.Reporting.Services;
 using Ynab.Api.Client;
@@ -9,7 +10,7 @@ namespace Nabster.Reporting.Reports.Spend;
 /// Generates a monthly spend report for a specific category that groups and
 /// totals transactions based on prefixes in their memo text.
 /// </summary>
-public class SpendReport(IEnumerable<IYnabService> _ynabServices)
+public partial class SpendReport(IEnumerable<IYnabService> _ynabServices)
 {
     public async Task<SpendReportModel> Build(string? budgetName, string categoryName, string month, bool isDemo)
     {
@@ -67,7 +68,7 @@ public class SpendReport(IEnumerable<IYnabService> _ynabServices)
             BudgetName = budgetDetail.Name,
             CategoryName = categoryName,
             MonthName = DateTime.Parse(month).ToString("MMMM yyyy"),
-            Groups = allTransactions.GroupBy(t => t.Memo!.Split(':')[0]).Select(g => new SpendGroupModel
+            Groups = allTransactions.GroupBy(t => ExtractMemoPrefix(t.Memo!)).Select(g => new SpendGroupModel
             {
                 MemoPrefix = g.Key,
                 Transactions = g.Select(t => new SpendTransactionModel
@@ -82,11 +83,45 @@ public class SpendReport(IEnumerable<IYnabService> _ynabServices)
         return model;
     }
 
+    /// <summary>
+    /// Extracts the memo prefix from the format 🅜[prefix]
+    /// </summary>
+    private static string ExtractMemoPrefix(string memo)
+    {
+        var match = MemoRegex().Match(memo);
+        if (match.Success)
+        {
+            var content = match.Groups[1].Value;
+            // Split on colon to get the prefix
+            var parts = content.Split(':', 2);
+            return parts[0];
+        }
+        
+        // Fallback to old format (split on colon)
+        return memo.Split(':')[0];
+    }
+    
     private static string BuildDescription(string memoPrefix, TransactionDetail transaction)
     {
         var payee = CleanPayee(transaction.Payee_name!);
-        var memo = transaction.Memo!.Replace(memoPrefix + ":", string.Empty);
-        return string.IsNullOrWhiteSpace(memo) ? payee : $"{payee} - {memo}";
+        
+        // Extract the detail part after the prefix
+        var match = MemoRegex().Match(transaction.Memo!);
+        string detail = string.Empty;
+        
+        if (match.Success)
+        {
+            var content = match.Groups[1].Value;
+            var parts = content.Split(':', 2);
+            detail = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+        }
+        else
+        {
+            // Fallback to old format
+            detail = transaction.Memo!.Replace(memoPrefix + ":", string.Empty);
+        }
+        
+        return string.IsNullOrWhiteSpace(detail) ? payee : $"{payee} - {detail}";
     }
 
     private static string CleanPayee(string payee)
@@ -98,4 +133,7 @@ public class SpendReport(IEnumerable<IYnabService> _ynabServices)
         if (payee.Contains("apple", StringComparison.InvariantCultureIgnoreCase)) return "Apple";
         return payee;
     }
+    
+    [GeneratedRegex(@"🅜\[([^\]]+)\]")]
+    private static partial Regex MemoRegex();
 }

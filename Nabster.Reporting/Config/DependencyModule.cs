@@ -20,6 +20,7 @@ public static class DependencyModule
         services.AddTransient<HistoricalReport>();
         services.AddTransient<PlanningReport>();
         services.AddTransient<SpendReport>();
+        services.AddTransient<MemoService>();
 
         return services;
     }

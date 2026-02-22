@@ -45,6 +45,21 @@
                 "--month",
                 "2026-01"
             ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Utility: Memo",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
+            "args": [
+                "utility",
+                "memo",
+                "--since-date",
+                "2022-04-01"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
