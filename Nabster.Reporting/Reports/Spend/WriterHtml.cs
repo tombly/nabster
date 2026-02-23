@@ -84,7 +84,7 @@ public static class SpendToHtml
 
     private static void CreateTransactionRow(StringBuilder html, SpendTransactionModel transaction)
     {
-        var bgColor = (_rowIndex++ % 2 == 0) ? "#f6f6f6" : "#ffffff";
+        var bgColor = (_rowIndex++ % 2 == 0) ? "#f5f5f5" : "#ffffff";
         html.AppendLine($"<div class='flex-row' style='background-color: {bgColor};'>");
         html.AppendLine($"<div class='flex-column-wide'>{transaction.Description}</div>");
         html.AppendLine($"<div class='flex-column'>{transaction.Date.DateTime.ToShortDateString()}</div>");

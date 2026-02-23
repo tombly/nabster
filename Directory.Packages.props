@@ -35,7 +35,7 @@
     <PackageVersion Include="ModelContextProtocol" Version="0.4.0-preview.1" />
     <!-- YNAB packages -->
     <PackageVersion Include="Ynab.Api.Client" Version="1.77.0.1" />
-    <PackageVersion Include="Ynab.Api.Client.Extensions" Version="1.77.0.1" />
+    <PackageVersion Include="Ynab.Api.Client.Extensions" Version="1.77.0.2" />
     <PackageVersion Include="Ynab.Api.Client.Mock" Version="1.77.0.1" />
   </ItemGroup>
 </Project>
