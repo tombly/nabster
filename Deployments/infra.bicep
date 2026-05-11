@@ -16,20 +16,8 @@ param apicName string
 @description('The resource name of the logic app')
 param logicAppName string
 
-@description('The resource name of the Open AI service')
-param openAIAccountName string
-
 @secure()
 param ynabAccessToken string
-
-@secure()
-param twilioAccountSid string
-
-@secure()
-param twilioAuthToken string
-
-@secure()
-param twilioPhoneNumber string
 
 @secure()
 param smtp2GoApiKey string
@@ -37,42 +25,8 @@ param smtp2GoApiKey string
 @secure()
 param smtp2GoEmailAddress string
 
-@description('The message to send to the function (used by logic app).')
-param message string
-
 @description('The email addresses to send to the function (used by logic app).')
-param toEmailAddress string
-
-resource openAIAccount 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' = {
-  name: openAIAccountName
-  location: location
-  sku: {
-    name: 'S0'
-  }
-  kind: 'OpenAI'
-  properties: {
-    publicNetworkAccess: 'Enabled'
-    customSubDomainName: openAIAccountName
-  }
-}
-
-resource gpt4 'Microsoft.CognitiveServices/accounts/deployments@2024-04-01-preview' = {
-  parent: openAIAccount
-  name: 'gpt-4o-mini'
-  sku: {
-    name: 'Standard'
-    capacity: 8
-  }
-  properties: {
-    model: {
-      format: 'OpenAI'
-      name: 'gpt-4o-mini'
-    }
-    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
-    currentCapacity: 8
-    raiPolicyName: 'Microsoft.Default'
-  }
-}
+param toEmailAddresses array
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionAppName
@@ -118,28 +72,12 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=YnabAccessToken)'
         }
         {
-          name: 'TWILIO_ACCOUNT_SID'
-          value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=TwilioAccountSid)'
-        }
-        {
-          name: 'TWILIO_AUTH_TOKEN'
-          value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=TwilioAuthToken)'
-        }
-        {
-          name: 'TWILIO_PHONE_NUMBER'
-          value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=TwilioPhoneNumber)'
-        }
-        {
           name: 'SMTP2GO_API_KEY'
           value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=Smtp2GoApiKey)'
         }
         {
           name: 'SMTP2GO_EMAIL_ADDRESS'
           value: '@Microsoft.KeyVault(VaultName=${vault.name};SecretName=Smtp2GoEmailAddress)'
-        }
-        {
-          name: 'OPENAI_URL'
-          value: 'https://${openAIAccountName}.openai.azure.com/'
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -228,48 +166,6 @@ resource vaultSecretFunctionAppKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01
       enabled: true
     }
     value: functionAppHost.listKeys().functionKeys.default
-  }
-}
-
-resource vaultSecretTwilioAccountSid 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  parent: vault
-  name: 'TwilioAccountSid'
-  tags: {
-    'file-encoding': 'utf-8'
-  }
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    value: twilioAccountSid
-  }
-}
-
-resource vaultSecretTwilioAuthToken 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  parent: vault
-  name: 'TwilioAuthToken'
-  tags: {
-    'file-encoding': 'utf-8'
-  }
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    value: twilioAuthToken
-  }
-}
-
-resource vaultSecretTwilioPhoneNumber 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  parent: vault
-  name: 'TwilioPhoneNumber'
-  tags: {
-    'file-encoding': 'utf-8'
-  }
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    value: twilioPhoneNumber
   }
 }
 
@@ -406,8 +302,13 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
               'x-functions-key': '@{body(\'Get_secret\')?[\'value\']}'
             }
             body: {
-              message: message
-              fromEmailAddress: toEmailAddress
+              isDemo: false
+              emailAddresses: toEmailAddresses
+              categoryNames: [
+                'Discretionary'
+                'Groceries'
+                'Unplanned'
+              ]
             }
           }
           runtimeConfiguration: {

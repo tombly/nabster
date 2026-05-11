@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Nabster.Chat.Functions": {
+    "Nabster.Server": {
       "commandName": "Project",
       "commandLineArgs": "--port 7299",
       "launchBrowser": false

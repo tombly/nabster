@@ -1,14 +1,11 @@
 # nabster
-An app for analyzing and reporting on your personal finances in [YNAB](https://www.youneedabudget.com) written in C# and built on Azure. There are two features:
-- An AI chatbot with integrated SMS that can answer questions about your financial data in YNAB.
-
-- A suite of reports for historical account balances, monthly spending, and budget planning.
+An app for analyzing and reporting on your personal finances in [YNAB](https://www.youneedabudget.com) written in C# and built on Azure. It provides a suite of reports for historical account balances, monthly spending, and budget planning, plus a daily summary that is emailed automatically on a schedule.
 
 ## Design
 
-Users interact with Nabster via the CLI or SMS. To generate reports, the user uses the CLI. To chat, the user can use either the CLI or SMS. When the user requests a report from the CLI, it retrieves the user's financial data from the YNAB API, generates the report, and then exports it to the user's desktop as an Excel spreadsheet or self-contained HTML file.
+Users interact with Nabster via the CLI. To generate ad-hoc reports, the CLI retrieves the user's financial data from the YNAB API, generates the report, and exports it to the user's desktop as an Excel spreadsheet or self-contained HTML file.
 
-When the user asks a question via the CLI, the prompt is forwarded to OpenAI which queries the YNAB API for the necessary financial data and then returns the answer via the console or SMS. When the user asks a question via SMS, Twilio calls a web hook that is handled by a function app which then forwards the prompt to OpenAI which queries the YNAB API and then calls back to Twilio to send the answer to the user.
+The daily summary report is produced by a function app. A logic app calls the function app on a recurring schedule; the function app pulls the latest activity from the YNAB API, formats a short summary, and emails it to the configured recipients via SMTP2GO. The same daily report can also be generated locally from the CLI, either by building it directly or by invoking the function app over HTTP.
 
 ![Design](Images/design.svg)
 
@@ -18,13 +15,11 @@ All secrets are stored in a key vault. The function app and logic app use system
 
 The code is organized into four projects:
 
-- Nabster.Chat - uses Semantic Kernel backed by OpenAI with a plug-in that allows it to call the YNAB API to answer questions about the user's financial data with responses sent via SMS. This is used by both the function app and the CLI.
+- Nabster.Reporting - a set of report generators that retrieve data from the YNAB API and generate reports in plain text, HTML, or Excel.
 
-- Nabster.Chat.Functions - a wrapper around Nabster.Chat that implements Twilio web hooks allowing users to submit questions via SMS.
+- Nabster.Server - an Azure Functions app that exposes an `IncomingMessage` HTTP endpoint. When called (typically by the logic app), it generates the daily report and optionally emails it to one or more recipients.
 
-- Nabster.Reporting - a set of report generators that retrieve data from the YNAB API and generate reports in HTML or Excel.
-
-- Nabster.Cli - a command-line interface to both the chat and reporting features.
+- Nabster.Cli - a command-line interface to the reporting features.
 
 - Nabster.Mcp - an MCP server that allows agents to retrieve budget and account data from the YNAB API.
 
@@ -56,12 +51,16 @@ This report lists all transactions for a specific category and month. The transa
 
 ![Spend Report Sample](Images/report-sample-spend.jpg)
 
+### Daily Report
+
+This report is a short plain-text summary of the current month's activity for a selected set of categories, showing the spending amount and percentage of the monthly budget used. It is intended to be delivered as an email on a schedule via the function app, but can also be generated locally from the CLI.
+
 ## How to use
 Clone the repo and open up the folder (I use VS Code for Mac with the C# Dev Kit, Azure, and Function App extensions).
 
 **1. Customize the infrastructure**
 
-Edit the `Deployments/infra.bicepparam` file to name the Azure resources that will be created and add your YNAB personal access token, Twilio credentials, and OpenAI endpoint.
+Edit the `Deployments/infra.bicepparam` file to name the Azure resources that will be created and to set your YNAB personal access token, SMTP2GO credentials, and the email addresses that should receive the daily report.
 
 **2. Deploy the infrastructure**
 
@@ -75,15 +74,13 @@ The function app can also be run locally and supports debugging with breakpoints
 
 **3. Add a config file for the CLI:**
 
-Create a new file called `config.json` inside the `Nabster.Cli` folder and set the URLs based on the names of your Azure resources.
+Create a new file called `config.json` inside the `Nabster.Cli` folder and set the URL based on the name of your Azure key vault.
 
 ```json
 {
     "Urls":
     {
-        "KeyVaultUrl": "https://mynabster-keyvault.vault.azure.net",
-        "OpenAiUrl": "https://mynabster-openai.openai.azure.com",
-        "FunctionAppUrl": "https://mynabster-functionapp.azurewebsites.net/api/IncomingMessage"
+        "KeyVaultUrl": "https://mynabster-keyvault.vault.azure.net"
     }
 }
 ```
@@ -94,6 +91,6 @@ If you want to run the CLI via VS Code then edit the `.vscode/launch.json` to ad
 
 ## License
 
-Copyright (c) 2025 Tom Bulatewicz
+Copyright (c) 2026 Tom Bulatewicz
 
 Licensed under the MIT license

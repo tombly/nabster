@@ -13,17 +13,16 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" />
     <PackageReference Include="Spectre.Console" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="Ynab.Api.Client" />
     <PackageReference Include="Ynab.Api.Client.Extensions" />
-    <PackageReference Include="Microsoft.SemanticKernel" />
   </ItemGroup>
 
   <ItemGroup> 
     <ProjectReference Include="../Nabster.Reporting/Nabster.Reporting.csproj" /> 
-    <ProjectReference Include="../Nabster.Chat/Nabster.Chat.csproj" /> 
   </ItemGroup> 
   
 

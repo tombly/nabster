@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Nabster.Reporting.Reports.Daily;
 using Nabster.Reporting.Reports.Historical;
 using Nabster.Reporting.Reports.Planning;
 using Nabster.Reporting.Reports.Spend;
@@ -17,6 +18,7 @@ public static class DependencyModule
 
         services.AddTransient<IYnabService, YnabServiceMock>();
         services.AddTransient<IYnabService, YnabService>();
+        services.AddTransient<DailyReport>();
         services.AddTransient<HistoricalReport>();
         services.AddTransient<PlanningReport>();
         services.AddTransient<SpendReport>();

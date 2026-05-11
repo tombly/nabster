@@ -1,9 +1,8 @@
 <Solution>
-  <Project Path="Nabster.Chat.Functions\Nabster.Chat.Functions.csproj" Type="C#" />
-  <Project Path="Nabster.Reporting\Nabster.Reporting.csproj" Type="C#" />
-  <Project Path="Nabster.Chat\Nabster.Chat.csproj" Type="C#" />
-  <Project Path="Nabster.Cli\Nabster.Cli.csproj" Type="C#" />
-  <Project Path="Nabster.Mcp\Nabster.Mcp.csproj" Type="C#" />
+  <Project Path="Nabster.Reporting\Nabster.Reporting.csproj" />
+  <Project Path="Nabster.Server\Nabster.Server.csproj" />
+  <Project Path="Nabster.Cli\Nabster.Cli.csproj" />
+  <Project Path="Nabster.Mcp\Nabster.Mcp.csproj" />
   <Properties Name="Configuration">
     <Property Name="Debug|Any CPU" />
     <Property Name="Debug|x64" />
