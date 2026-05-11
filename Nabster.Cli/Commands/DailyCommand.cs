@@ -32,7 +32,7 @@ internal sealed class DailyCommand : Command
                 if (url == null)
                 {
                     var report = await dailyReport.Build(budgetName, isDemo, categoryNames);
-                    ansiConsole.WriteLine(report);
+                    ansiConsole.WriteLine(report.Text);
                 }
                 else
                 {

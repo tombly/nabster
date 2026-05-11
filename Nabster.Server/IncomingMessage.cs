@@ -22,11 +22,11 @@ internal class IncomingMessage(ILogger<IncomingMessage> _logger, EmailService _e
         var emailAddresses = json.GetOptionalStringArrayValue("emailAddresses");
         var categoryNames = json.GetOptionalStringArrayValue("categoryNames");
 
-        var response = await _dailyReport.Build(budgetName, isDemo, categoryNames);
+        var report = await _dailyReport.Build(budgetName, isDemo, categoryNames);
 
         if (emailAddresses is not null)
-            await _emailService.Send(emailAddresses, response);
+            await _emailService.Send(emailAddresses, report.Text, report.Html);
 
-        return new OkObjectResult(response);
+        return new OkObjectResult(report.Text);
     }
 }

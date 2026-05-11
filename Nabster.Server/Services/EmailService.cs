@@ -19,20 +19,21 @@ public class EmailService(IOptions<ServerOptions> options, IHttpClientFactory ht
     /// </summary>
     /// <param name="emailAddresses">The recipient email addresses</param>
     /// <param name="message">The message body to send</param>
-    public async Task Send(string[] emailAddresses, string message)
+    public async Task Send(string[] emailAddresses, string message, string? htmlMessage = null)
     {
-        var tasks = emailAddresses.Select(email => SendSingleEmail(email, message));
+        var tasks = emailAddresses.Select(email => SendSingleEmail(email, message, htmlMessage));
         await Task.WhenAll(tasks);
     }
 
-    private async Task SendSingleEmail(string emailAddress, string message)
+    private async Task SendSingleEmail(string emailAddress, string message, string? htmlMessage)
     {
         var body = JsonSerializer.Serialize(new
         {
             sender = _smtp2GoEmailAddress,
             to = new[] { emailAddress },
             subject = "Nabster Notification",
-            text_body = message
+            text_body = message,
+            html_body = htmlMessage
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.smtp2go.com/v3/email/send")
