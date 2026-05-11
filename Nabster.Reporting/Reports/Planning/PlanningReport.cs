@@ -42,10 +42,10 @@ public class PlanningReport(IEnumerable<IYnabService> _ynabServices)
                             .Select(c => new PlanningCategoryModel
                             {
                                 CategoryName = c.Name,
-                                GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency),
+                                GoalCadence = BuildGoalCadence(c.Goal_cadence, c.Goal_cadence_frequency, c.Goal_target),
                                 GoalDay = BuildDueDate(c.Goal_cadence, c.Goal_day, c.Goal_target_month),
                                 GoalTarget = c.Goal_target > 0 ? c.Goal_target.Value.FromMilliunits() : 0,
-                                GoalPercentageComplete = c.Goal_cadence == 0 ? c.Goal_percentage_complete / 100m ?? 0 : null,
+                                GoalPercentageComplete = c.Goal_target > 0 && (c.Goal_cadence == 0 || c.Goal_cadence == null) ? c.Goal_percentage_complete / 100m ?? 0 : null,
                                 MonthlyCost = c.MonthlyNeed().FromMilliunits(),
                                 YearlyCost = (c.MonthlyNeed() * 12).FromMilliunits()
                             })
@@ -69,13 +69,13 @@ public class PlanningReport(IEnumerable<IYnabService> _ynabServices)
         return model;
     }
 
-    private static string BuildGoalCadence(int? goalCadence, int? goalCadenceFrequency)
+    private static string BuildGoalCadence(int? goalCadence, int? goalCadenceFrequency, long? goalTarget)
     {
-        if (goalCadence == null)
+        if (goalTarget == 0)
             return "None";
 
         var cadence = string.Empty;
-        if (new List<int?> { 0, 1, 2, 13 }.Contains(goalCadence))
+        if (new List<int?> { null, 0, 1, 2, 13 }.Contains(goalCadence))
         {
             // The goal's due date repeats every goal_cadence * goal_cadence_frequency,
             // where 0 = None, 1 = Monthly, 2 = Weekly, and 13 = Yearly. For example,
@@ -83,6 +83,7 @@ public class PlanningReport(IEnumerable<IYnabService> _ynabServices)
             // other month.
             switch (goalCadence)
             {
+                case null:
                 case 0:
                     cadence = "Once";
                     break;
