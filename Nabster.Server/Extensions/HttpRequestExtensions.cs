@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 
-namespace Nabster.Chat.Functions.Extensions;
+namespace Nabster.Server.Extensions;
 
 internal static class HttpRequestExtensions
 {

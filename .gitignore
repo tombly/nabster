@@ -404,7 +404,7 @@ Deployments/infra.local.bicepparam
 
 Nabster.Cli/config.json
 Nabster.Mcp/config.json
-Nabster.Chat.Functions/local.settings.json
+Nabster.Server/local.settings.json
 
 # Azurite (Azure Storage Emulator)
 __azurite_db_blob__.json

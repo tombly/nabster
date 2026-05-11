@@ -50,6 +50,40 @@
             "console": "internalConsole"
         },
         {
+            "name": "Report: Daily",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
+            "args": [
+                "report",
+                "daily",
+                "--category-names",
+                "Discretionary",
+                "Groceries",
+                "Unplanned"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Report: Daily (server)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
+            "args": [
+                "report",
+                "daily",
+                "--url",
+                "http://localhost:7071/api/IncomingMessage"
+            ],
+            "cwd": "${workspaceFolder}/Nabster.Cli",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "Utility: Memo",
             "type": "coreclr",
             "request": "launch",
@@ -66,60 +100,10 @@
             "console": "internalConsole"
         },
         {
-            "name": "Chat: Functions",
+            "name": "Local Server",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
-        },
-        {
-            "name": "Chat: Direct",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
-            "args": [
-                "chat",
-                "direct",
-                "--message",
-                "What is the Activity of the Discretionary category, both the dollar amount and percentage of monthly need? Answer in the format 'Category Name: activity dollar amount (percentage)'. Do the same for the Groceries category. For the Unplanned category, just give the activity."
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Chat: Local",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
-            "args": [
-                "chat",
-                "func",
-                "--message",
-                "What is my Checking balance?",
-                "--url",
-                "http://localhost:7071/api/"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Chat: Azure",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
-            "args": [
-                "chat",
-                "func",
-                "--message",
-                "What is my Checking balance?"
-            ],
-            "cwd": "${workspaceFolder}/Nabster.Cli",
-            "stopAtEntry": false,
-            "console": "internalConsole"
         }
     ]
 }

@@ -21,10 +21,6 @@
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.3" />
-    <!-- AI/ML packages -->
-    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.72.0" />
-    <!-- Communication packages -->
-    <PackageVersion Include="Twilio" Version="7.14.3" />
     <!-- Reporting packages -->
     <PackageVersion Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageVersion Include="OxyPlot.Core" Version="2.2.0" />

@@ -8,7 +8,7 @@ function_app="$1-functionapp"
 
 echo "Deploying to $function_app..."
 
-cd ../Nabster.Chat.Functions
+cd ../Nabster.Server
 dotnet clean --configuration Release /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
 dotnet publish --configuration Release /property:GenerateFullPaths=true /consoleloggerparameters:NoSummary
 cd bin/Release/net10.0/publish/

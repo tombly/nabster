@@ -1,28 +1,27 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Nabster.Chat.Config;
+using Nabster.Server.Config;
 
-namespace Nabster.Chat.Services;
+namespace Nabster.Server.Services;
 
 /// <summary>
 /// Provides email sending functionality using SMTP2GO API.
 /// </summary>
-public class EmailService(IOptions<ChatOptions> chatOptions, IHttpClientFactory httpClientFactory)
+public class EmailService(IOptions<ServerOptions> options, IHttpClientFactory httpClientFactory)
 {
-    private readonly string _smtp2GoApiKey = chatOptions.Value.Smtp2GoApiKey ?? throw new Exception("Smtp2GoApiKey not set");
-    private readonly string _smtp2GoEmailAddress = chatOptions.Value.Smtp2GoEmailAddress ?? throw new Exception("Smtp2GoEmailAddress not set");
+    private readonly string _smtp2GoApiKey = options.Value.Smtp2GoApiKey ?? throw new Exception("Smtp2GoApiKey not set");
+    private readonly string _smtp2GoEmailAddress = options.Value.Smtp2GoEmailAddress ?? throw new Exception("Smtp2GoEmailAddress not set");
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
     /// <summary>
     /// Sends an email to one or more recipients.
     /// </summary>
-    /// <param name="emailAddresses">Comma-separated list of email addresses</param>
+    /// <param name="emailAddresses">The recipient email addresses</param>
     /// <param name="message">The message body to send</param>
-    public async Task Send(string emailAddresses, string message)
+    public async Task Send(string[] emailAddresses, string message)
     {
-        var tasks = emailAddresses.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                  .Select(email => SendSingleEmail(email, message));
+        var tasks = emailAddresses.Select(email => SendSingleEmail(email, message));
         await Task.WhenAll(tasks);
     }
 

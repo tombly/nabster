@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nabster.Chat.Config;
 using Nabster.Cli.Commands;
 using Nabster.Cli.Config;
 using Nabster.Reporting.Config;
@@ -46,20 +45,16 @@ public static class Program
         }));
 
         // Inject options.
-        builder.Services.Configure<ChatOptions>(builder.Configuration.GetSection(ChatOptions.Section));
         builder.Services.Configure<ReportOptions>(builder.Configuration.GetSection(ReportOptions.Section));
-        builder.Services.Configure<FunctionOptions>(builder.Configuration.GetSection(FunctionOptions.Section));
+        builder.Services.Configure<ServerOptions>(builder.Configuration.GetSection(ServerOptions.Section));
 
         // Inject feature services.
         builder.Services.AddHttpClient();
-        builder.Services.AddNabsterChat();
         builder.Services.AddNabsterReports();
 
         // Inject command handlers.
         builder.Services.AddTransient<RootCommand>();
-        builder.Services.AddTransient<ChatCommand>();
-        builder.Services.AddTransient<FuncCommand>();
-        builder.Services.AddTransient<DirectCommand>();
+        builder.Services.AddTransient<DailyCommand>();
         builder.Services.AddTransient<ReportCommand>();
         builder.Services.AddTransient<UtilityCommand>();
         builder.Services.AddTransient<HistoricalCommand>();
@@ -85,27 +80,16 @@ public static class Program
         var keyVaultUrl = config["Urls:KeyVaultUrl"] ?? throw new InvalidOperationException("KeyVaultUrl not found.");
         var secretClient = new SecretClient(vaultUri: new Uri(keyVaultUrl), credential: new DefaultAzureCredential());
 
-        // Add a config section for the Chat feature.
-        settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["Chat:TwilioAccountSid"] = secretClient.GetSecret("TwilioAccountSid").Value.Value,
-            ["Chat:TwilioAuthToken"] = secretClient.GetSecret("TwilioAuthToken").Value.Value,
-            ["Chat:TwilioPhoneNumber"] = secretClient.GetSecret("TwilioPhoneNumber").Value.Value,
-            ["Chat:OpenAiUrl"] = config["Urls:OpenAiUrl"],
-            ["Chat:YnabAccessToken"] = secretClient.GetSecret("YnabAccessToken").Value.Value
-        });
-
-        // Add a config section for the Reports feature.
+        // Add a config section to populate ReportOptions.
         settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Reports:YnabAccessToken"] = secretClient.GetSecret("YnabAccessToken").Value.Value
         });
 
-        // Add a config section for the Function command.
+        // Add a config section to populate ServerOptions.
         settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Function:Url"] = config["Urls:FunctionAppUrl"],
-            ["Function:Key"] = secretClient.GetSecret("FunctionAppKey").Value.Value
+            ["Server:FunctionAppKey"] = secretClient.GetSecret("FunctionAppKey").Value.Value
         });
 
         return settings;
