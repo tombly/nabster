@@ -43,7 +43,7 @@
                 "--category-name",
                 "Discretionary",
                 "--month",
-                "2026-01"
+                "2026-04"
             ],
             "cwd": "${workspaceFolder}/Nabster.Cli",
             "stopAtEntry": false,
