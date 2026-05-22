@@ -5,5 +5,6 @@
     "debug.internalConsoleOptions": "neverOpen",
     "azureFunctions.preDeployTask": "publish (functions)",
     "chat.mcp.assisted.nuget.enabled": true,
-    "chat.mcp.autostart": "newAndOutdated"
+    "chat.mcp.autostart": "newAndOutdated",
+    "azurite.location": ".azurite"
 }

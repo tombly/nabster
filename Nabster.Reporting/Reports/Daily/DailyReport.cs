@@ -28,7 +28,8 @@ public class DailyReport(IEnumerable<IYnabService> _ynabServices)
             .Select(c => new CategoryRow(c.Name!, c.Activity.FromMilliunits(), c.Budgeted.FromMilliunits()))
             .ToList();
 
-        var today = DateTime.Today;
+        var pacific = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles");
+        var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pacific).Date;
         var daysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
         var percentThroughMonth = (int)Math.Round((double)today.Day / daysInMonth * 100);
 

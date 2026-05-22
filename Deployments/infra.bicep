@@ -263,7 +263,6 @@ resource stg 'Microsoft.Logic/workflows@2019-05-01' = {
             schedule: {
               hours: [
                 9
-                18
               ]
               minutes: [
                 0
