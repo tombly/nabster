@@ -14,21 +14,21 @@
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
     <!-- Microsoft Extensions packages -->
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.8" />
     <!-- Reporting packages -->
     <PackageVersion Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageVersion Include="OxyPlot.Core" Version="2.2.0" />
     <!-- CLI packages -->
     <PackageVersion Include="Spectre.Console" Version="0.55.2" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.7" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.8" />
     <!-- MCP packages -->
-    <PackageVersion Include="ModelContextProtocol" Version="0.4.0-preview.1" />
+    <PackageVersion Include="ModelContextProtocol" Version="1.3.0" />
     <!-- YNAB packages -->
     <PackageVersion Include="Ynab.Api.Client" Version="1.77.0.1" />
     <PackageVersion Include="Ynab.Api.Client.Extensions" Version="1.77.0.3" />
