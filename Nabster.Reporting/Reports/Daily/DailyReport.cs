@@ -97,15 +97,17 @@ public class DailyReport(IEnumerable<IYnabService> _ynabServices)
         {
             var absActivity = Math.Abs(c.Activity);
             var remaining = c.Budgeted + c.Activity;
-            var amountText = remaining == 0
+            var availableText = remaining == 0
                 ? "$0"
                 : $"{(remaining < 0 ? "-" : "")}${Math.Abs(remaining):N0}";
+            var totalText = $"${c.Budgeted:N0}";
+            var amountText = $"{availableText}/{totalText}";
             var amountColor = remaining > 0 ? "#22c55e" : remaining < 0 ? "#ef4444" : "#64748b";
 
             int? pct = c.Budgeted > 0 && c.Activity != 0
                 ? (int)Math.Round(absActivity / c.Budgeted * 100)
                 : null;
-            var barColor = pct switch { < 50 => "#22c55e", < 80 => "#f59e0b", _ => "#ef4444" };
+            var barColor = pct switch { < 75 => "#22c55e", <= 100 => "#f59e0b", _ => "#ef4444" };
             var barWidth = pct.HasValue ? Math.Min(pct.Value, 100) : 0;
 
             sb.Append($"""
