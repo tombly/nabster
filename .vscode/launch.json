@@ -5,7 +5,7 @@
             "name": "Report: Historical",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "report",
@@ -19,7 +19,7 @@
             "name": "Report: Planning",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "report",
@@ -35,7 +35,7 @@
             "name": "Report: Spend",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "report",
@@ -53,7 +53,7 @@
             "name": "Report: Daily",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "report",
@@ -71,7 +71,7 @@
             "name": "Report: Daily (server)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "report",
@@ -87,7 +87,7 @@
             "name": "Utility: Memo",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
+            "preLaunchTask": "build (cli)",
             "program": "${workspaceFolder}/Nabster.Cli/bin/Debug/net10.0/Nabster.Cli.dll",
             "args": [
                 "utility",

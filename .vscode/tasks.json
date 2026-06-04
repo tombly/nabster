@@ -11,6 +11,21 @@
 			"label": "dotnet: build"
 		},
 		{
+			"label": "build (cli)",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"Nabster.Cli.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"type": "process",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"cwd": "${workspaceFolder}/Nabster.Cli"
+			}
+		},
+		{
 			"label": "clean (functions)",
 			"command": "dotnet",
 			"args": [
