@@ -98,16 +98,17 @@ public class DailyReport(IEnumerable<IYnabService> _ynabServices)
             var absActivity = Math.Abs(c.Activity);
             var remaining = c.Budgeted + c.Activity;
             var absRemaining = Math.Abs(remaining);
+            var showsOnlyZeroAmount = c.Budgeted == 0 && c.Activity == 0;
             var remainingText = remaining == 0
                 ? "$0"
                 : $"{(remaining < 0 ? "-" : string.Empty)}${absRemaining:N0}";
             var totalText = $"${c.Budgeted:N0}";
-            var amountText = $"{remainingText}/{totalText}";
             var amountColor = remaining > 0 ? "#22c55e" : remaining < 0 ? "#ef4444" : "#64748b";
 
             int? pct = c.Budgeted > 0 && c.Activity != 0
                 ? (int)Math.Round(absActivity / c.Budgeted * 100)
                 : null;
+            var amountText = pct.HasValue || showsOnlyZeroAmount ? remainingText : $"{remainingText}/{totalText}";
             var barColor = pct switch { < 75 => "#22c55e", <= 100 => "#f59e0b", _ => "#ef4444" };
             var barWidth = pct.HasValue ? Math.Min(pct.Value, 100) : 0;
 
@@ -132,7 +133,7 @@ public class DailyReport(IEnumerable<IYnabService> _ynabServices)
                           </tr></table>
                         </td>
                       </tr></table>
-                      <p style="margin:4px 0 0 0;text-align:right;font-size:11px;color:#94a3b8;">{pct}% spent</p>
+                      <p style="margin:4px 0 0 0;text-align:right;font-size:11px;color:#94a3b8;">{pct}% of {totalText} spent</p>
                     </td></tr>
                     """);
             }
