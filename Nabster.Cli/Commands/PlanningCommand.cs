@@ -36,7 +36,7 @@ internal sealed class PlanningCommand : Command
                             fileExtension = "html";
                             break;
                     }
-                    var fileName = $"{budgetName} Planning {DateTime.Now:yyyyMMdd}.{fileExtension}";
+                    var fileName = $"{report.BudgetName} Planning {DateTime.Now:yyyyMMdd}.{fileExtension}";
                     var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
                     using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                     await stream.WriteAsync(fileBytes);
