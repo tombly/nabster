@@ -23,10 +23,11 @@ internal class IncomingMessage(ILogger<IncomingMessage> _logger, EmailService _e
         var categoryNames = json.GetOptionalStringArrayValue("categoryNames");
 
         var report = await _dailyReport.Build(budgetName, isDemo, categoryNames);
+        var text = DailyReport.BuildText(report);
 
         if (emailAddresses is not null)
-            await _emailService.Send(emailAddresses, report.Text, report.Html);
+            await _emailService.Send(emailAddresses, text, DailyReport.BuildHtml(report));
 
-        return new OkObjectResult(report.Text);
+        return new OkObjectResult(text);
     }
 }
