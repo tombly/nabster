@@ -42,8 +42,16 @@ public class HistoricalReport(IEnumerable<IYnabService> _ynabServices)
             }).ToList()
         };
 
-        // Get all the transactions.
-        var transactions = (await ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), null, null, null)).Data.Transactions.ToList();
+        // Only download the past year of transactions. Anything older isn't
+        // shown on the report, and downloading the entire history is slow for
+        // long-lived budgets.
+        var sinceDate = DateTimeOffset.Now.AddDays(-365);
+        var transactions = (await ynabService.Client.GetTransactionsAsync(budgetDetail.Id.ToString(), sinceDate, null, null)).Data.Transactions.ToList();
+
+        // Each account's balance at the start of the window, so the running
+        // balances stay anchored to absolute account balances instead of the
+        // change over the window.
+        var startingBalances = new Dictionary<string, decimal>();
 
         foreach (var account in accounts)
         {
@@ -51,8 +59,17 @@ public class HistoricalReport(IEnumerable<IYnabService> _ynabServices)
             var accountGroupModel = model.AccountGroups.First(g => g.Prefix == accountPrefix);
             var accountModel = accountGroupModel.Accounts.First(a => account.Name == a.Name);
 
-            var cumulative = 0m;
-            foreach (var transaction in transactions.Where(t => t.Account_name == account.Name).OrderBy(t => t.Date))
+            var accountTransactions = transactions.Where(t => t.Account_name == account.Name).OrderBy(t => t.Date).ToList();
+
+            // An account's current balance is the sum of every transaction it
+            // has ever had. Since we only download the past year, derive the
+            // balance at the start of the window by subtracting the downloaded
+            // transactions from the current balance.
+            var startingBalance = account.Balance.FromMilliunits() - accountTransactions.Sum(t => t.Amount.FromMilliunits());
+            startingBalances[account.Name] = startingBalance;
+
+            var cumulative = startingBalance;
+            foreach (var transaction in accountTransactions)
             {
                 var date = transaction.Date;
                 var amount = transaction.Amount.FromMilliunits();
@@ -88,7 +105,9 @@ public class HistoricalReport(IEnumerable<IYnabService> _ynabServices)
         {
             var groupTransactions = accountGroup.Accounts.SelectMany(a => a.Transactions).OrderBy(t => t.Date).ToList();
 
-            var cumulative = 0m;
+            // Seed the group's running balance with the combined starting
+            // balance of its accounts so the totals stay anchored too.
+            var cumulative = accountGroup.Accounts.Sum(a => startingBalances.GetValueOrDefault(a.Name));
             foreach (var transaction in groupTransactions)
             {
                 accountGroup.AllTransactions.Add(new HistoricalTransactionModel

@@ -97,6 +97,11 @@ public static class WriterHtml
 
             foreach (var account in accountGroup.Accounts)
             {
+                // Accounts with no activity in the past year have nothing to
+                // plot; their balance still contributes to the group total.
+                if (account.Transactions.Count == 0)
+                    continue;
+
                 data.DataSeries.Add(new ChartDataSeries
                 {
                     Title = account.Name,
